@@ -31,10 +31,10 @@ void register_web_routes(wpp_app& app){
         return crow::mustache::load("home.html").render(ctx);
     });
 
-    app.any("/link/<int>").name("Link")
-    ([](int link_id){
+    app.route({method::post,method::get},"/link/<string>").name("Link")
+    ([](std::string link_id){
         crow::mustache::context ctx;
-        ctx["title"] = "Link "+to_string(link_id);
+        ctx["title"] = "Link "+link_id;
         Timestamp now;
         ctx["dt"] = std::string(DateTimeFormatter::format(now, DateTimeFormat::HTTP_FORMAT));
         return crow::mustache::load("home.html").render(ctx);
@@ -42,6 +42,7 @@ void register_web_routes(wpp_app& app){
 
     app.any("/json").name("Json")
     ([]{
+
         wpp::json x;
         x["message"] = "Hello, World!";
         return x;
