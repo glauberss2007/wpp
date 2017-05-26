@@ -10,9 +10,13 @@ sudo apt-get install build-essential
 sudo apt-get install clang++
 sudo apt-get install git
 sudo apt-get install cmake
+sudo apt-get install openssl
 sudo apt-get install libboost-all-dev
 sudo apt-get install libpoco-dev
 ```
+
+Além destas, você precisa das bibliotecas `Tcmalloc`, `Threads` e `OpenSSL`, que normalmente vêm instaladas pelo sistema operacional.
+
 
 ### Instalando bibliotecas (MacOSX)
 
@@ -29,6 +33,9 @@ tar xvfz poco-1.7.8p2.tar
 cd poco-1.7.8p2
 
 ```
+
+Além destas, você precisa das bibliotecas `Tcmalloc`, `Threads` e `OpenSSL`, que normalmente vêm instaladas pelo sistema operacional.
+
 
 ### Configurando Gitlab no CLion
 
