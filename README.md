@@ -22,6 +22,8 @@ Além destas, você precisa das bibliotecas `Tcmalloc`, `Threads` e `OpenSSL`, q
 
 ```
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew update
+brew install conan
 brew install git
 brew install cmake
 brew install boost

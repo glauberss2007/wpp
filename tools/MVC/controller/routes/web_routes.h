@@ -23,12 +23,40 @@ using namespace wpp;
 void register_web_routes(wpp_app& app){
 
     app.any("/").name("Home")
-    ([]{
+    ([](){
         crow::mustache::context ctx;
         ctx["title"] = "Home";
         Timestamp now;
         ctx["dt"] = std::string(DateTimeFormatter::format(now, DateTimeFormat::HTTP_FORMAT));
         return crow::mustache::load("home.html").render(ctx);
+    });
+
+    app.any("/requests").name("Requests")
+    ([](const wpp::request& req){
+        string all_requests;
+        all_requests += "\nreq.method: \t" + to_string((int)req.method) + "\n";
+        all_requests += "req.raw_url: \t" + req.raw_url + "\n";
+        all_requests += "req.url: \t" + req.url + "\n";
+        all_requests += "req.url_params: \t" + req.url_params.to_string() + "\n";
+        all_requests += "req.headers: \n";
+        for (auto header :req.headers) {
+            all_requests += "     " + header.first + ": \t" + header.second + "\n";
+        }
+        all_requests += "req.body: \t" + req.body + "\n";
+        // all_requests += "req.service " + to_string(req.io_service) + "\n";
+        // all_requests += "req.middleware_context " + req.middleware_context + "\n";
+
+        // other functions
+        // req.add_header()
+        // req.dispatch()
+        // req.post()
+        // req.get_header_value()
+        return all_requests;
+//        crow::mustache::context ctx;
+//        ctx["title"] = all_requests;
+//        Timestamp now;
+//        ctx["dt"] = std::string(DateTimeFormatter::format(now, DateTimeFormat::HTTP_FORMAT));
+//        return crow::mustache::load("home.html").render(ctx);
     });
 
     app.route({method::post,method::get},"/link/<string>").name("Link")
@@ -42,10 +70,18 @@ void register_web_routes(wpp_app& app){
 
     app.any("/json").name("Json")
     ([]{
-
-        wpp::json x;
-        x["message"] = "Hello, World!";
-        return x;
+        // 1. Parse a JSON string into DOM.
+        const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
+        rapidjson::Document d;
+        d.Parse(json);
+        // 2. Modify it by DOM.
+        rapidjson::Value& s = d["stars"];
+        s.SetInt(s.GetInt() + 1);
+        // 3. Stringify the DOM
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+        d.Accept(writer);
+        return (std::string)buffer.GetString();
     });
 
     app.any("/beer/<int>").name("beer")
@@ -63,7 +99,7 @@ void register_web_routes(wpp_app& app){
     ([](int user_id){
         Timestamp now;
         std::string dt(DateTimeFormatter::format(now, DateTimeFormat::HTTP_FORMAT));
-        return crow::mustache::load("templates/home.html").render();
+        return crow::mustache::load("home.html").render();
     });
 
     app.any("/add/<int>/<int>").name("Add numbers")

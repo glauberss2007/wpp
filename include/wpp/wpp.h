@@ -10,6 +10,10 @@
 #include <iostream>
 #include <initializer_list>
 
+// Rapidjson libraries
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 // Boost libraries
 #include <boost/optional.hpp>
@@ -22,7 +26,7 @@ using boost::optional;
 namespace wpp {
     // typedefs and enums
     // TODO : Change wpp::json = crow::json for rapidjson
-    using json = crow::json::wvalue;
+    using json = rapidjson::Document;
     using response = crow::response;
     using request = crow::request;
 
