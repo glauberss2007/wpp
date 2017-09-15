@@ -1,11 +1,8 @@
-set(SOURCE_FILES MVC/main.cpp ${WPP_SRC_FILES})
+add_subdirectory(MVC)
 
 
-file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/MVC/view/templates
-        DESTINATION ${CMAKE_BINARY_DIR}/bin/
-        PATTERN .svn EXCLUDE
-        )
+if (WPP_ENABLE_TESTING)
+    add_subdirectory(tests)
+endif()
 
 
-add_executable(wpp ${SOURCE_FILES})
-target_link_libraries(wpp ${ALL_LIBRARIES})

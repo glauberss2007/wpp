@@ -14,129 +14,131 @@ namespace crow
 {
     namespace black_magic
     {
-#ifndef CROW_MSVC_WORKAROUND
-        struct OutOfRange
-        {
-            OutOfRange(unsigned /*pos*/, unsigned /*length*/) {}
-        };
-        constexpr unsigned requires_in_range( unsigned i, unsigned len )
-        {
-            return i >= len ? throw OutOfRange(i, len) : i;
-        }
-
-        class const_str
-        {
-            const char * const begin_;
-            unsigned size_;
-
-            public:
-
-            constexpr const_str(const char * s) : begin_(s), size_(sizeof(s) / sizeof(s[0])){};
-
-            template< unsigned N >
-                constexpr const_str( const char(&arr)[N] ) : begin_(arr), size_(N - 1) {
-                    static_assert( N >= 1, "not a string literal");
+        #ifndef CROW_MSVC_WORKAROUND
+                struct OutOfRange
+                {
+                    OutOfRange(unsigned /*pos*/, unsigned /*length*/) {}
+                };
+                constexpr unsigned requires_in_range( unsigned i, unsigned len )
+                {
+                    return i >= len ? throw OutOfRange(i, len) : i;
                 }
 
-            constexpr char operator[]( unsigned i ) const { 
-                return requires_in_range(i, size_), begin_[i]; 
-            }
+                class const_str
+                {
+                    const char * const begin_;
+                    unsigned size_;
 
-            constexpr operator const char *() const { 
-                return begin_; 
-            }
+                    public:
 
-            constexpr const char* begin() const { return begin_; }
-            constexpr const char* end() const { return begin_ + size_; }
+                    constexpr const_str(const char * s) : begin_(s), size_(sizeof(s) / sizeof(s[0])){};
 
-            constexpr unsigned size() const { 
-                return size_; 
-            }
-        };
+                    template< unsigned N >
+                        constexpr const_str( const char(&arr)[N] ) : begin_(arr), size_(N - 1) {
+                            static_assert( N >= 1, "not a string literal");
+                        }
 
-        constexpr unsigned find_closing_tag(const_str s, unsigned p)
-        {
-            return s[p] == '>' ? p : find_closing_tag(s, p+1);
-        }
+                    constexpr char operator[]( unsigned i ) const {
+                        return requires_in_range(i, size_), begin_[i];
+                    }
 
-        constexpr bool is_valid(const_str s, unsigned i = 0, int f = 0)
-        {
-            return 
-                i == s.size()
-                    ? f == 0 :
-                f < 0 || f >= 2
-                    ? false :
-                s[i] == '<'
-                    ? is_valid(s, i+1, f+1) :
-                s[i] == '>'
-                    ? is_valid(s, i+1, f-1) :
-                is_valid(s, i+1, f);
-        }
+                    constexpr operator const char *() const {
+                        return begin_;
+                    }
 
-        constexpr bool is_equ_p(const char* a, const char* b, unsigned n)
-        {
-            return
-                *a == 0 && *b == 0 && n == 0 
-                    ? true :
-                (*a == 0 || *b == 0)
-                    ? false :
-                n == 0
-                    ? true :
-                *a != *b
-                    ? false :
-                is_equ_p(a+1, b+1, n-1);
-        }
+                    constexpr const char* begin() const { return begin_; }
+                    constexpr const char* end() const { return begin_ + size_; }
 
-        constexpr bool is_equ_n(const_str a, unsigned ai, const_str b, unsigned bi, unsigned n)
-        {
-            return 
-                ai + n > a.size() || bi + n > b.size() 
-                    ? false :
-                n == 0 
-                    ? true : 
-                a[ai] != b[bi] 
-                    ? false : 
-                is_equ_n(a,ai+1,b,bi+1,n-1);
-        }
+                    constexpr unsigned size() const {
+                        return size_;
+                    }
+                };
 
-        constexpr bool is_int(const_str s, unsigned i)
-        {
-            return is_equ_n(s, i, "<int>", 0, 5);
-        }
+                constexpr unsigned find_closing_tag(const_str s, unsigned p)
+                {
+                    return s[p] == '>' ? p : find_closing_tag(s, p+1);
+                }
 
-        constexpr bool is_uint(const_str s, unsigned i)
-        {
-            return is_equ_n(s, i, "<uint>", 0, 6);
-        }
+                constexpr bool is_valid(const_str s, unsigned i = 0, int f = 0)
+                {
+                    return
+                        i == s.size()
+                            ? f == 0 :
+                        f < 0 || f >= 2
+                            ? false :
+                        s[i] == '<'
+                            ? is_valid(s, i+1, f+1) :
+                        s[i] == '>'
+                            ? is_valid(s, i+1, f-1) :
+                        is_valid(s, i+1, f);
+                }
 
-        constexpr bool is_float(const_str s, unsigned i)
-        {
-            return is_equ_n(s, i, "<float>", 0, 7) ||
-                is_equ_n(s, i, "<double>", 0, 8);
-        }
+                constexpr bool is_equ_p(const char* a, const char* b, unsigned n)
+                {
+                    return
+                        *a == 0 && *b == 0 && n == 0
+                            ? true :
+                        (*a == 0 || *b == 0)
+                            ? false :
+                        n == 0
+                            ? true :
+                        *a != *b
+                            ? false :
+                        is_equ_p(a+1, b+1, n-1);
+                }
 
-        constexpr bool is_str(const_str s, unsigned i)
-        {
-            return is_equ_n(s, i, "<str>", 0, 5) ||
-                is_equ_n(s, i, "<string>", 0, 8);
-        }
+                constexpr bool is_equ_n(const_str a, unsigned ai, const_str b, unsigned bi, unsigned n)
+                {
+                    return
+                        ai + n > a.size() || bi + n > b.size()
+                            ? false :
+                        n == 0
+                            ? true :
+                        a[ai] != b[bi]
+                            ? false :
+                        is_equ_n(a,ai+1,b,bi+1,n-1);
+                }
 
-        constexpr bool is_path(const_str s, unsigned i)
-        {
-            return is_equ_n(s, i, "<path>", 0, 6);
-        }
-#endif
+                constexpr bool is_int(const_str s, unsigned i)
+                {
+                    return is_equ_n(s, i, "<int>", 0, 5);
+                }
+
+                constexpr bool is_uint(const_str s, unsigned i)
+                {
+                    return is_equ_n(s, i, "<uint>", 0, 6);
+                }
+
+                constexpr bool is_float(const_str s, unsigned i)
+                {
+                    return is_equ_n(s, i, "<float>", 0, 7) ||
+                        is_equ_n(s, i, "<double>", 0, 8);
+                }
+
+                constexpr bool is_str(const_str s, unsigned i)
+                {
+                    return is_equ_n(s, i, "<str>", 0, 5) ||
+                        is_equ_n(s, i, "<string>", 0, 8);
+                }
+
+                constexpr bool is_path(const_str s, unsigned i)
+                {
+                    return is_equ_n(s, i, "<path>", 0, 6);
+                }
+        #endif
         template <typename T> 
         struct parameter_tag
         {
             static const int value = 0;
         };
-#define CROW_INTERNAL_PARAMETER_TAG(t, i) \
-template <> \
-struct parameter_tag<t> \
-{ \
-    static const int value = i; \
-}
+
+        #define CROW_INTERNAL_PARAMETER_TAG(t, i) \
+        template <> \
+        struct parameter_tag<t> \
+        { \
+            static const int value = i; \
+        }
+
         CROW_INTERNAL_PARAMETER_TAG(int, 1);
         CROW_INTERNAL_PARAMETER_TAG(char, 1);
         CROW_INTERNAL_PARAMETER_TAG(short, 1);
@@ -149,7 +151,8 @@ struct parameter_tag<t> \
         CROW_INTERNAL_PARAMETER_TAG(unsigned long long, 2);
         CROW_INTERNAL_PARAMETER_TAG(double, 3);
         CROW_INTERNAL_PARAMETER_TAG(std::string, 4);
-#undef CROW_INTERNAL_PARAMETER_TAG
+        #undef CROW_INTERNAL_PARAMETER_TAG
+
         template <typename ... Args>
         struct compute_parameter_tag_from_args_list;
 
@@ -216,35 +219,35 @@ struct parameter_tag<t> \
                     ) :
                 get_parameter_tag_runtime(s, p+1);
         }
-#ifndef CROW_MSVC_WORKAROUND
+        #ifndef CROW_MSVC_WORKAROUND
 
-        constexpr uint64_t get_parameter_tag(const_str s, unsigned p = 0)
-        {
-            return
-                p == s.size() 
-                    ?  0 :
-                s[p] == '<' ? ( 
-                    is_int(s, p)
-                        ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 1 :
-                    is_uint(s, p)
-                        ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 2 :
-                    is_float(s, p)
-                        ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 3 :
-                    is_str(s, p)
-                        ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 4 :
-                    is_path(s, p)
-                        ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 5 :
-                    throw std::runtime_error("invalid parameter type")
-                    ) : 
-                get_parameter_tag(s, p+1);
-        }
+                constexpr uint64_t get_parameter_tag(const_str s, unsigned p = 0)
+                {
+                    return
+                        p == s.size()
+                            ?  0 :
+                        s[p] == '<' ? (
+                            is_int(s, p)
+                                ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 1 :
+                            is_uint(s, p)
+                                ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 2 :
+                            is_float(s, p)
+                                ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 3 :
+                            is_str(s, p)
+                                ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 4 :
+                            is_path(s, p)
+                                ? get_parameter_tag(s, find_closing_tag(s, p)) * 6 + 5 :
+                            throw std::runtime_error("invalid parameter type")
+                            ) :
+                        get_parameter_tag(s, p+1);
+                }
 
-        constexpr uint64_t get_parameter_tag(char* s, unsigned p = 0){
-            const const_str c(s);
-            return get_parameter_tag(c,p);
-        }
+                constexpr uint64_t get_parameter_tag(char* s, unsigned p = 0){
+                    const const_str c(s);
+                    return get_parameter_tag(c,p);
+                }
 
-#endif
+        #endif
 
         template <typename ... T>
         struct S
@@ -256,8 +259,10 @@ struct parameter_tag<t> \
             template <template<typename ... Args> class U>
             using rebind = U<T...>;
         };
-template <typename F, typename Set>
+
+        template <typename F, typename Set>
         struct CallHelper;
+
         template <typename F, typename ...Args>
         struct CallHelper<F, S<Args...>>
         {

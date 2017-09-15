@@ -4,23 +4,12 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
-#include "crow/utility.h"
+#include "utility.h"
 
 namespace crow
 {
     enum class HTTPMethod
     {
-#ifndef DELETE
-        DELETE = 0,
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-#endif
-
         Delete = 0,
         Get,
         Head,
@@ -62,7 +51,6 @@ namespace crow
         DOUBLE,
         STRING,
         PATH,
-
         MAX
     };
 
@@ -76,17 +64,17 @@ namespace crow
         void debug_print() const
         {
             std::cerr << "routing_params" << std::endl;
-            for(auto i:int_params)
-                std::cerr<<i <<", " ;
+            for(auto x:int_params)
+                std::cerr<<x <<", " ;
             std::cerr<<std::endl;
-            for(auto i:uint_params)
-                std::cerr<<i <<", " ;
+            for(auto x:uint_params)
+                std::cerr<<x <<", " ;
             std::cerr<<std::endl;
-            for(auto i:double_params)
-                std::cerr<<i <<", " ;
+            for(auto x:double_params)
+                std::cerr<<x <<", " ;
             std::cerr<<std::endl;
-            for(auto& i:string_params)
-                std::cerr<<i <<", " ;
+            for(auto& x:string_params)
+                std::cerr<<x <<", " ;
             std::cerr<<std::endl;
         }
 

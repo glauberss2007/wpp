@@ -17,11 +17,10 @@
 #include "crow/http_request.h"
 #include "crow/http_server.h"
 
-
 #ifdef CROW_MSVC_WORKAROUND
 #define CROW_ROUTE(app, url) app.route_dynamic(url)
 #else
-#define CROW_ROUTE(app, url) app.route<crow::black_magic::get_parameter_tag(url)>(url)
+#define CROW_ROUTE(app, url) app.route<crow::const_str::get_parameter_tag(url)>(url)
 #endif
 
 namespace crow
@@ -202,7 +201,7 @@ namespace crow
         template <typename T>
         typename T::context& get_context(const request& req)
         {
-            static_assert(black_magic::contains<T, Middlewares...>::value, "App doesn't have the specified middleware type.");
+            static_assert(const_str::contains<T, Middlewares...>::value, "App doesn't have the specified middleware type.");
             auto& ctx = *reinterpret_cast<context_t*>(req.middleware_context);
             return ctx.template get<T>();
         }

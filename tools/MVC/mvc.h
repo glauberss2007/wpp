@@ -9,20 +9,17 @@
 #include <wpp.h>
 #include <regex>
 
-using namespace std;
 using namespace wpp;
 
-
-void setup_mvc(wpp_app& app){
+/// setup_mvc - include the data of our mvc in the application
+///
+/// @param app - reference to the w++ application
+void setup_mvc(wpp::application& app){
     // register_middlewares(app);
     // register_permissions(app);
     register_web_routes(app);
     // register_api_routes(app);
 //    app.print_routes();
 }
-
-
-
-
 
 #endif //WPP_MVC_H
