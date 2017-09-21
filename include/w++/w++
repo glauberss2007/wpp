@@ -1,0 +1,21 @@
+//
+// Created by Alan de Freitas on 15/09/17.
+//
+
+#ifndef WPP_W_H
+#define WPP_W_H
+
+// mustache
+#include "bustache/model.hpp"
+
+// Application
+#include "application.h"
+
+namespace wpp {
+    namespace mustache = bustache;
+}
+
+
+
+
+#endif //WPP_W_H

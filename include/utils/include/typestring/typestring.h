@@ -17,116 +17,111 @@
 
 namespace irqus {
 
-/*~
- * @desc A class 'storing' strings into distinct, reusable compile-time types that
- *       can be used as type parameters in a template parameter list.
- * @tprm C... : char non-type parameter pack whose ordered sequence results
- *              into a specific string.
- * @note Could have wrapped up everything in a single class, eventually will,
- *       once some compilers fix their class scope lookups! I have added some
- *       utility functions because asides being a fun little project, it is of
- *       use in certain constructs related to template metaprogramming
- *       nonetheless.
- */
-template<char... C>
-struct typestring final {
-private:
-    static constexpr char const   vals[sizeof...(C)+1] = { C...,'\0' };
-    static constexpr unsigned int sval = sizeof...(C);
-public:
-    
-    static constexpr char const * data() noexcept
-    { return &vals[0]; }
-    
-    static constexpr unsigned int size() noexcept
-    { return sval; };
-    
-    static constexpr char const * cbegin() noexcept
-    { return &vals[0]; }
-    
-    static constexpr char const * cend() noexcept
-    { return &vals[sval]; }
-};
+    /*~
+     * @desc A class 'storing' strings into distinct, reusable compile-time types that
+     *       can be used as type parameters in a template parameter list.
+     * @tprm C... : char non-type parameter pack whose ordered sequence results
+     *              into a specific string.
+     * @note Could have wrapped up everything in a single class, eventually will,
+     *       once some compilers fix their class scope lookups! I have added some
+     *       utility functions because asides being a fun little project, it is of
+     *       use in certain constructs related to template metaprogramming
+     *       nonetheless.
+     */
+    template<char... C>
+    struct typestring final {
+        private:
+            static constexpr char const vals[sizeof...(C) + 1] = {C..., '\0'};
+            static constexpr unsigned int sval = sizeof...(C);
+        public:
 
-template<char... C>
-constexpr char const typestring<C...>::vals[sizeof...(C)+1];
+            static constexpr char const *data() noexcept { return &vals[0]; }
 
-//*~ part 1: preparing the ground, because function templates are awesome.
+            static constexpr unsigned int size() noexcept { return sval; };
 
-/*~
- * @note While it is easy to resort to constexpr strings for use in constexpr
- *       metaprogramming, what we want is to convert compile time string in situ
- *       definitions into reusable, distinct types, for use in advanced template
- *       metaprogramming techniques. We want such features because this kind of
- *       metaprogramming constitutes a pure, non-strict, untyped functional
- *       programming language with pattern matching where declarative semantics
- *       can really shine.
- * 
- *       Currently, there is no feature in C++ that offers the opportunity to
- *       use strings as type parameter types themselves, despite there are
- *       several, different library implementations. This implementation is a
- *       fast, short, single-header, stupid-proof solution that works with any
- *       C++11 compliant compiler and up, with the resulting type being easily
- *       reusable throughout the code.
- * 
- * @usge Just include the header and enable -std=c++11 or -std=c++14 etc, use
- *       like in the following example:
- * 
- *            typestring_is("Hello!")
- *       
- *       is essentially identical to the following template instantiation:
- *          
- *            irqus::typestring<'H', 'e', 'l', 'l', 'o', '!'>
- * 
- *       By passing -DUSE_TYPESTRING=<power of 2> during compilation, you can
- *       set the maximum length of the 'typestring' from 1 to 1024 (2^0 to 2^10).
- *       Although all preprocessor implementations tested are capable of far
- *       more with this method, exceeding this limit may cause internal compiler
- *       errors in most, with at times rather hilarious results.
- */
+            static constexpr char const *cbegin() noexcept { return &vals[0]; }
 
-template<int N, int M>
-constexpr char tygrab(char const(&c)[M]) noexcept
-{ return c[N < M ? N : M-1]; }
+            static constexpr char const *cend() noexcept { return &vals[sval]; }
+    };
 
-//*~ part2: Function template type signatures for type deduction purposes. In
-//          other words, exploiting the functorial nature of parameter packs
-//          while mixing them with an obvious catamorphism through pattern
-//          matching galore (partial ordering in this case in C++ "parlance").
+    template<char... C>
+    constexpr char const typestring<C...>::vals[sizeof...(C) + 1];
 
-template<char... X>
-auto typoke(typestring<X...>) // as is...
-  -> typestring<X...>;
+    //*~ part 1: preparing the ground, because function templates are awesome.
 
-template<char... X, char... Y>
-auto typoke(typestring<X...>, typestring<'\0'>, typestring<Y>...)
-  -> typestring<X...>;
+    /*~
+     * @note While it is easy to resort to constexpr strings for use in constexpr
+     *       metaprogramming, what we want is to convert compile time string in situ
+     *       definitions into reusable, distinct types, for use in advanced template
+     *       metaprogramming techniques. We want such features because this kind of
+     *       metaprogramming constitutes a pure, non-strict, untyped functional
+     *       programming language with pattern matching where declarative semantics
+     *       can really shine.
+     *
+     *       Currently, there is no feature in C++ that offers the opportunity to
+     *       use strings as type parameter types themselves, despite there are
+     *       several, different library implementations. This implementation is a
+     *       fast, short, single-header, stupid-proof solution that works with any
+     *       C++11 compliant compiler and up, with the resulting type being easily
+     *       reusable throughout the code.
+     *
+     * @usge Just include the header and enable -std=c++11 or -std=c++14 etc, use
+     *       like in the following example:
+     *
+     *            typestring_is("Hello!")
+     *
+     *       is essentially identical to the following template instantiation:
+     *
+     *            irqus::typestring<'H', 'e', 'l', 'l', 'o', '!'>
+     *
+     *       By passing -DUSE_TYPESTRING=<power of 2> during compilation, you can
+     *       set the maximum length of the 'typestring' from 1 to 1024 (2^0 to 2^10).
+     *       Although all preprocessor implementations tested are capable of far
+     *       more with this method, exceeding this limit may cause internal compiler
+     *       errors in most, with at times rather hilarious results.
+     */
 
-template<char A, char... X, char... Y>
-auto typoke(typestring<X...>, typestring<A>, typestring<Y>...)
-  -> decltype(typoke(typestring<X...,A>(), typestring<Y>()...));
+    template<int N, int M>
+    constexpr char tygrab(char const(&c)[M]) noexcept { return c[N < M ? N : M - 1]; }
 
-template<char... C>
-auto typeek(typestring<C...>)
-  -> decltype(typoke(typestring<C>()...));
+    //*~ part2: Function template type signatures for type deduction purposes. In
+    //          other words, exploiting the functorial nature of parameter packs
+    //          while mixing them with an obvious catamorphism through pattern
+    //          matching galore (partial ordering in this case in C++ "parlance").
 
-template<char... A, char... B, typename... X>
-auto tycat_(typestring<A...>, typestring<B...>, X... x)
-   -> decltype(tycat_(typestring<A..., B...>(), x...));
+    template<char... X>
+    auto typoke(typestring<X...>) // as is...
+    -> typestring<X...>;
 
-template<char... X>
-auto tycat_(typestring<X...>)
-   -> typestring<X...>;
+    template<char... X, char... Y>
+    auto typoke(typestring<X...>, typestring<'\0'>, typestring<Y>...)
+    -> typestring<X...>;
 
-/*
- * Some people actually using this header as is asked me to include
- * a typestring "cat" utility given that it is easy enough to implement.
- * I have added this functionality through the template alias below. For
- * the obvious implementation, nothing more to say. All T... must be
- * of course, "typestrings".
- */
-template<typename... T>
-using tycat
+    template<char A, char... X, char... Y>
+    auto typoke(typestring<X...>, typestring<A>, typestring<Y>...)
+    -> decltype(typoke(typestring<X..., A>(), typestring<Y>()...));
+
+    template<char... C>
+    auto typeek(typestring<C...>)
+    -> decltype(typoke(typestring<C>()...));
+
+    template<char... A, char... B, typename... X>
+    auto tycat_(typestring<A...>, typestring<B...>, X... x)
+    -> decltype(tycat_(typestring<A..., B...>(), x...));
+
+    template<char... X>
+    auto tycat_(typestring<X...>)
+    -> typestring<X...>;
+
+    /*
+     * Some people actually using this header as is asked me to include
+     * a typestring "cat" utility given that it is easy enough to implement.
+     * I have added this functionality through the template alias below. For
+     * the obvious implementation, nothing more to say. All T... must be
+     * of course, "typestrings".
+     */
+    template<typename... T>
+    using tycat
     = decltype(tycat_(T()...));
 
 } /* irqus */
@@ -134,7 +129,7 @@ using tycat
 
 //*~ part3: some necessary code generation using preprocessor metaprogramming!
 //          There is functional nature in preprocessor metaprogramming as well.  
-    
+
 /*~
  * @note Code generation block. Undoubtedly, the preprocessor implementations
  *       of both clang++ and g++ are relatively competent in producing a
@@ -150,25 +145,25 @@ using tycat
  */
 
 /* 2^0 = 1 */
-#define TYPESTRING1(n,x) irqus::tygrab<0x##n##0>(x)
+#define TYPESTRING1(n, x) irqus::tygrab<0x##n##0>(x)
 
 /* 2^1 = 2 */
-#define TYPESTRING2(n,x) irqus::tygrab<0x##n##0>(x), irqus::tygrab<0x##n##1>(x) 
+#define TYPESTRING2(n, x) irqus::tygrab<0x##n##0>(x), irqus::tygrab<0x##n##1>(x)
 
 /* 2^2 = 2 */
-#define TYPESTRING4(n,x) \
+#define TYPESTRING4(n, x) \
         irqus::tygrab<0x##n##0>(x), irqus::tygrab<0x##n##1>(x) \
-      , irqus::tygrab<0x##n##2>(x), irqus::tygrab<0x##n##3>(x)    
+      , irqus::tygrab<0x##n##2>(x), irqus::tygrab<0x##n##3>(x)
 
 /* 2^3 = 8 */
-#define TYPESTRING8(n,x) \
+#define TYPESTRING8(n, x) \
         irqus::tygrab<0x##n##0>(x), irqus::tygrab<0x##n##1>(x) \
       , irqus::tygrab<0x##n##2>(x), irqus::tygrab<0x##n##3>(x) \
       , irqus::tygrab<0x##n##4>(x), irqus::tygrab<0x##n##5>(x) \
-      , irqus::tygrab<0x##n##6>(x), irqus::tygrab<0x##n##7>(x) 
+      , irqus::tygrab<0x##n##6>(x), irqus::tygrab<0x##n##7>(x)
 
 /* 2^4 = 16 */
-#define TYPESTRING16(n,x) \
+#define TYPESTRING16(n, x) \
         irqus::tygrab<0x##n##0>(x), irqus::tygrab<0x##n##1>(x) \
       , irqus::tygrab<0x##n##2>(x), irqus::tygrab<0x##n##3>(x) \
       , irqus::tygrab<0x##n##4>(x), irqus::tygrab<0x##n##5>(x) \
@@ -179,22 +174,22 @@ using tycat
       , irqus::tygrab<0x##n##E>(x), irqus::tygrab<0x##n##F>(x)
 
 /* 2^5 = 32 */
-#define TYPESTRING32(n,x) \
+#define TYPESTRING32(n, x) \
         TYPESTRING16(n##0,x),TYPESTRING16(n##1,x)
-      
+
 /* 2^6 = 64 */
-#define TYPESTRING64(n,x) \
+#define TYPESTRING64(n, x) \
         TYPESTRING16(n##0,x), TYPESTRING16(n##1,x), TYPESTRING16(n##2,x) \
       , TYPESTRING16(n##3,x)
 
 /* 2^7 = 128 */
-#define TYPESTRING128(n,x) \
+#define TYPESTRING128(n, x) \
         TYPESTRING16(n##0,x), TYPESTRING16(n##1,x), TYPESTRING16(n##2,x) \
       , TYPESTRING16(n##3,x), TYPESTRING16(n##4,x), TYPESTRING16(n##5,x) \
       , TYPESTRING16(n##6,x), TYPESTRING16(n##7,x)
 
 /* 2^8 = 256 */
-#define TYPESTRING256(n,x) \
+#define TYPESTRING256(n, x) \
         TYPESTRING16(n##0,x), TYPESTRING16(n##1,x), TYPESTRING16(n##2,x) \
       , TYPESTRING16(n##3,x), TYPESTRING16(n##4,x), TYPESTRING16(n##5,x) \
       , TYPESTRING16(n##6,x), TYPESTRING16(n##7,x), TYPESTRING16(n##8,x) \
@@ -203,11 +198,11 @@ using tycat
       , TYPESTRING16(n##F,x)
 
 /* 2^9 = 512 */
-#define TYPESTRING512(n,x) \
+#define TYPESTRING512(n, x) \
         TYPESTRING256(n##0,x), TYPESTRING256(n##1,x)
 
 /* 2^10 = 1024 */
-#define TYPESTRING1024(n,x) \
+#define TYPESTRING1024(n, x) \
         TYPESTRING256(n##0,x), TYPESTRING256(n##1,x), TYPESTRING256(n##2,x) \
       , TYPESTRING128(n##3,x), TYPESTRING16(n##38,x), TYPESTRING16(n##39,x) \
       , TYPESTRING16(n##3A,x), TYPESTRING16(n##3B,x), TYPESTRING16(n##3C,x) \
@@ -270,6 +265,6 @@ using tycat
 #endif
 #else
 #define typestring_is(x) \
-    decltype(irqus::typeek(irqus::typestring<TYPESTRING64(,x)>()))
+    decltype(irqus::typeek(irqus::typestring<TYPESTRING1024(,x)>()))
 #endif
 #endif /* IRQUS_TYPESTRING_HH_ */

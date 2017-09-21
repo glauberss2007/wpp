@@ -12,7 +12,7 @@
 #include <vector>
 #include <algorithm>
 #ifdef HAVE_OPENSSL
-#include "simple_web_server/crypto.hpp"
+#include "crypto.hpp"
 #endif
 
 using namespace std;
@@ -32,20 +32,21 @@ int main() {
     //1 thread is usually faster than several threads
     HttpServer server;
     server.config.port=8080;
-    
+
     //Add resources using path-regex and method-string, and an anonymous function
     //POST-example for the path /string, responds the posted string
     server.resource["^/string$"]["POST"]=[](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         //Retrieve string:
         auto content=request->content.string();
+
         //request->content.string() is a convenience function for:
         //stringstream ss;
         //ss << request->content.rdbuf();
         //string content=ss.str();
-        
+
         *response << "HTTP/1.1 200 OK\r\nContent-Length: " << content.length() << "\r\n\r\n" << content;
     };
-    
+
     //POST-example for the path /json, responds firstName+" "+lastName from the posted json
     //Responds with an appropriate error message if the posted json is not valid, or if firstName or lastName is missing
     //Example posted json:
@@ -80,20 +81,31 @@ int main() {
         for(auto& header: request->header) {
             content_stream << header.first << ": " << header.second << "<br>";
         }
-        
+
         //find length of content_stream (length received using content_stream.tellp())
         content_stream.seekp(0, ios::end);
-        
+
         *response <<  "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n" << content_stream.rdbuf();
     };
-    
+
     //GET-example for the path /match/[number], responds with the matched string in path (number)
     //For instance a request GET /match/123 will receive: 123
     server.resource["^/match/([0-9]+)$"]["GET"]=[&server](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         string number=request->path_match[1];
+        number += "\n";
+        number += "request->content: " + request->content.string() + "\n";
+        number += "request->header: " + to_string(request->header.size()) + "\n";
+        for (auto &&item : request->header) {
+            number += "    " + item.first + ": " + item.second  + "\n";
+        }
+        number += "request->http_version: " + request->http_version + "\n";
+        number += "request->method: " + request->method + "\n";
+        number += "request->path: " + request->path + "\n";
+        number += "request->remote_endpoint_address: " + request->remote_endpoint_address + "\n";
+        number += "request->remote_endpoint_port: " + to_string(request->remote_endpoint_port) + "\n";
         *response << "HTTP/1.1 200 OK\r\nContent-Length: " << number.length() << "\r\n\r\n" << number;
     };
-    
+
     //Get example simulating heavy work in a separate thread
     server.resource["^/work$"]["GET"]=[&server](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> /*request*/) {
         thread work_thread([response] {
@@ -103,8 +115,8 @@ int main() {
         });
         work_thread.detach();
     };
-    
-    //Default GET-example. If no other matches, this anonymous function will be called. 
+
+    //Default GET-example. If no other matches, this anonymous function will be called.
     //Will respond with content in the web/-directory, and its subdirectories.
     //Default file: index.html
     //Can for instance be used to retrieve an HTML 5 client that uses REST-resources on this server
@@ -126,7 +138,7 @@ int main() {
             // Uncomment the following line to enable Cache-Control
             // cache_control="Cache-Control: max-age=86400\r\n";
 
-#ifdef HAVE_OPENSSL
+            #ifdef HAVE_OPENSSL
             // Uncomment the following lines to enable ETag
             // {
             //     ifstream ifs(path.string(), ifstream::in | ios::binary);
@@ -144,15 +156,15 @@ int main() {
             //     else
             //         throw invalid_argument("could not read file");
             // }
-#endif
+            #endif
 
             auto ifs=make_shared<ifstream>();
             ifs->open(path.string(), ifstream::in | ios::binary | ios::ate);
-            
+
             if(*ifs) {
                 auto length=ifs->tellg();
                 ifs->seekg(0, ios::beg);
-                
+
                 *response << "HTTP/1.1 200 OK\r\n" << cache_control << etag << "Content-Length: " << length << "\r\n\r\n";
                 default_resource_send(server, response, ifs);
             }
@@ -164,15 +176,15 @@ int main() {
             *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << content.length() << "\r\n\r\n" << content;
         }
     };
-    
+
     thread server_thread([&server](){
         //Start server
         server.start();
     });
-    
+
     //Wait for server to start so that the client can connect
     this_thread::sleep_for(chrono::seconds(1));
-    
+
     //Client examples
     HttpClient client("localhost:8080");
     auto r1=client.request("GET", "/match/123");
@@ -181,12 +193,12 @@ int main() {
     string json_string="{\"firstName\": \"John\",\"lastName\": \"Smith\",\"age\": 25}";
     auto r2=client.request("POST", "/string", json_string);
     cout << r2->content.rdbuf() << endl;
-    
+
     auto r3=client.request("POST", "/json", json_string);
     cout << r3->content.rdbuf() << endl;
-    
+
     server_thread.join();
-    
+
     return 0;
 }
 

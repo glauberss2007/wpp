@@ -4,9 +4,10 @@ project(wpp)
 
 if (${APPLE})
     set(CMAKE_CXX_STANDARD 14)
-else()
+else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-endif()
+endif ()
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 add_compile_options(-Wno-deprecated-declarations -Wno-trigraphs -Wno-deprecated-register)
 
@@ -23,15 +24,14 @@ include(components/3rdsrcsandlibs.cmake)
 
 # define settings
 include(settings.cmake)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/wpp/settings.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/wpp/settings.h)
 
 # wpp include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/wpp)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/crow)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/w++)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/utils/include)
 
 # wpp sources
-file(GLOB WPP_SRC_FILES lib/wpp/*.cpp)
+file(GLOB WPP_SRC_FILES lib/w++/*.cpp)
 
 # create library that will be used by all executables (mvcs, tests, and benchmarks)
 # but there are no cpps so there is nothing to create
@@ -39,4 +39,5 @@ add_library(wpp_lib STATIC ${3rdPARTY_SRC} ${WPP_SRC_FILES})
 
 # wpp executables
 add_subdirectory(tools)
+add_subdirectory(include/utils)
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include "plots.h"
+#include "utils/include/utils/plots.h"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
