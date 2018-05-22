@@ -121,11 +121,11 @@ THE SOFTWARE.
 #ifdef _WIN32
 #	include <windows.h>
 #	define GNUPLOT_PCLOSE _pclose
-#	define GNUPLOT_POPEN  _popen
+#	define GNUPLOT_popN  _popn
 #	define GNUPLOT_FILENO _fileno
 #else
 #	define GNUPLOT_PCLOSE pclose
-#	define GNUPLOT_POPEN  popen
+#	define GNUPLOT_popN  popn
 #	define GNUPLOT_FILENO fileno
 #endif
 
@@ -1578,7 +1578,7 @@ private:
 			if(!fh) throw(std::ios_base::failure("cannot open file "+fn));
 			return FileHandleWrapper(fh, false);
 		} else {
-			FILE *fh = GNUPLOT_POPEN(cmd.c_str(), "w");
+			FILE *fh = GNUPLOT_popN(cmd.c_str(), "w");
 			if(!fh) throw(std::ios_base::failure("cannot open pipe "+cmd));
 			return FileHandleWrapper(fh, true);
 		}

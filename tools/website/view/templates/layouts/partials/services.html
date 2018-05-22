@@ -1,0 +1,22 @@
+<section id="services" class="emerald">
+    <div class="container">
+        <div class="row">
+            {{@foreach}}("services")
+            <div class="col-md-4 col-sm-6">
+                <div class="media">
+                    <div class="pull-left">
+                        <span class="fa-stack fa-3x">
+                          <i class="fa fa-circle fa-stack-2x" style="color:black; opacity: 0.35;"></i>
+                          <i class="{{icon}} fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </div>
+                    <div class="media-body">
+                        <h3 class="media-heading">{{media-heading}}</h3>
+                        <p>{{description}}</p>
+                    </div>
+                </div>
+            </div><!--/.col-md-4-->
+            {{/foreach}}
+        </div>
+    </div>
+</section><!--/#services-->

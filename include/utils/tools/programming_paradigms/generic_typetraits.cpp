@@ -1,6 +1,10 @@
 // https://theboostcpplibraries.com/boost.typetraits
 #include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/function_types/function_type.hpp>
+#include <boost/function_types/parameter_types.hpp>
+#include <boost/function_types/function_arity.hpp>
+#include <boost/typeof/std/utility.hpp>
 #include <type_traits>
 #include <iostream>
 #include "termcolor/termcolor.hpp"
@@ -87,5 +91,20 @@ int main() {
         print<long>(2);
         print<double>(3.14);
     }
+
+    std::cout << termcolor::bold << termcolor::underline << "Getting lambda return types" << termcolor::reset << std::endl;
+    {
+
+        auto foo = [](int a, char b){ return 0; };
+
+        typedef decltype(foo) foo_type;
+        //std::cout << "is_function_pointer< bool(*)(int) >::value" << boost::function_types::is_function_pointer< bool(*)(int) >::value << std::endl;
+        std::cout << "function_arity< bool(*)(int) >::value = " << boost::function_types::function_arity< foo_type >::value << std::endl;
+        std::cout << typeid(boost::mpl::at_c<boost::function_types::parameter_types<foo_type>,1>::type).name() << ",";
+        std::cout << typeid(boost::mpl::at_c<boost::function_types::parameter_types<foo_type>,2>::type).name() << ",";
+
+    }
+
+
     return 0;
 }

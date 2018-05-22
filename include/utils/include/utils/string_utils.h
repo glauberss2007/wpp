@@ -16,9 +16,14 @@
 #include <fstream>
 #include <sstream>
 
+#include <unordered_map>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/tokenizer.hpp>
+
+#include "container/php_utils.h"
 
 using namespace std;
 
@@ -62,19 +67,36 @@ namespace utils {
         }
     }
 
-    template <class STRING = std::string, class DELIM = char>
-    std::vector<STRING> explode(STRING const & s, DELIM delim)
+    // Determine if a given string contains a given substring.
+    bool contains(string const & haystack, string needle)
     {
-        std::vector<STRING> result;
-        std::istringstream iss(s);
+        return haystack.find(needle) != std::string::npos;
+    }
 
-        for (STRING token; std::getline(iss, token, delim); )
-        {
-            result.push_back(std::move(token));
+    string lower(string value)
+    {
+        return boost::algorithm::to_lower_copy(value);
+    }
+
+    // Convert a string to snake case.
+    string snake(string value, string delimiter = "_")
+    {
+        string key = value;
+
+        static std::unordered_map<string,map<string,string>> snake_cache;
+
+        if (snake_cache[key].count(delimiter)) {
+            return snake_cache[key][delimiter];
         }
 
-        return result;
+        if (!utils::ctype_lower(value)) {
+            value = utils::preg_replace("/\\s+/u", "", value);
+            value = utils::lower(preg_replace("/(.)(?=[A-Z])/u", "$1" + delimiter, value));
+        }
+
+        return snake_cache[key][delimiter] = value;
     }
+
 
 
 }

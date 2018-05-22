@@ -9,19 +9,31 @@
 #include "utils/logging.h"
 #include <string>
 #include <vector>
+#include <boost/optional.hpp>
 
 namespace wpp{
     using namespace std;
     using namespace utils;
+    using boost::optional;
+
     struct routing_params {
         std::vector<std::string> parameter_name;
-        std::vector<std::string> parameter_value;
+        std::vector<optional<std::string>> parameter_value;
         std::vector<ParamType> parameter_trait;
 
         string get(string parameter, string def = ""){
             auto it = find(parameter_name.begin(),parameter_name.end(),parameter);
             if (it == parameter_name.end()){
                 return def;
+            } else {
+                return *parameter_value[it - parameter_name.begin()];
+            }
+        }
+
+        optional<string> get_optional(string parameter){
+            auto it = find(parameter_name.begin(),parameter_name.end(),parameter);
+            if (it == parameter_name.end()){
+                return optional<string>{};
             } else {
                 return parameter_value[it - parameter_name.begin()];
             }
@@ -30,6 +42,14 @@ namespace wpp{
         string get(unsigned pos, string def = ""){
             if (pos > parameter_value.size()){
                 return def;
+            } else {
+                return *parameter_value[pos];
+            }
+        }
+
+        optional<string> get_optional(unsigned pos){
+            if (pos > parameter_value.size()){
+                return optional<string>{};
             } else {
                 return parameter_value[pos];
             }
@@ -47,7 +67,11 @@ namespace wpp{
         void debug_print() const {
             log::info << "routing_params" << std::endl;
             for (int i = 0; i < parameter_name.size(); ++i) {
-                log::info << parameter_name[i] << ": " << parameter_value[i] <<  ", ";
+                if (parameter_value[i]){
+                    log::info << parameter_name[i] << ": " << *parameter_value[i] <<  ", ";
+                } else {
+                    log::info << parameter_name[i] << ": (empty), ";
+                }
             }
             log::info << std::endl;
         }

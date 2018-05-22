@@ -5,17 +5,23 @@
 #ifndef WPP_W_H
 #define WPP_W_H
 
-// mustache
-#include "bustache/model.hpp"
+// external libs
+//#include "bustache/model.hpp"
+#include "utils/json.hpp"
+
+namespace wpp {
+    //namespace mustache = bustache;
+    using json = nlohmann::json;
+}
 
 // Application
 #include "application.h"
 
-namespace wpp {
-    namespace mustache = bustache;
-}
+// Guards keep user data to protect the routes
+#include "guard.h"
 
-
-
+// Functions with cycles
+#include "response.hpp"
+#include "request.hpp"
 
 #endif //WPP_W_H

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>layouts/partials/head.html}}
+<body>
+
+    {{>layouts/partials/navbar.html}}
+
+    {{$banner}}{{>layouts/partials/banner.html}}{{/banner}}
+
+    {{$main_content}}
+        <section id="career" class="container">
+            <p>Main content goes here</p>
+        </section>
+    {{/main_content}}
+
+    {{>layouts/partials/bottom_links.html}}
+
+    {{>layouts/partials/scripts.html}}
+
+    {{>layouts/partials/footer.html}}
+
+</body>
+</html>

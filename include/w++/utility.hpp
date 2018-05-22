@@ -1,7 +1,7 @@
-#ifndef SIMPLE_WEB_UTILITY_HPP
-#define SIMPLE_WEB_UTILITY_HPP
+#ifndef WPP_UTILITY_HPP
+#define WPP_UTILITY_HPP
 
-#include "status_code.hpp"
+#include "enums.h"
 #include "methods.h"
 #include <atomic>
 #include <iostream>
@@ -99,6 +99,7 @@ namespace wpp {
 
             /// Returns query keys with percent-decoded values.
             static CaseInsensitiveMultimap parse(const std::string &query_string) noexcept {
+                // TODO: Take it from here
                 CaseInsensitiveMultimap result;
 
                 if(query_string.empty())
@@ -341,4 +342,4 @@ namespace wpp {
     };
 } // namespace wpp
 
-#endif // SIMPLE_WEB_UTILITY_HPP
+#endif // WPP_UTILITY_HPP

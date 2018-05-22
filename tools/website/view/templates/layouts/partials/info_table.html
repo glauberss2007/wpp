@@ -1,0 +1,131 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Request Field</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#table_data}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/table_data}}
+    </tbody>
+</table>
+{{@if}}("request_parameters")
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>URL Parameter</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#request_parameters}}
+    <tr>
+        <td>request_parameters</td>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/request_parameters}}
+    </tbody>
+</table>
+{{/if}}
+{{@if}}("headers")
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Header</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#headers}}
+    <tr>
+        <td>headers.</td>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/headers}}
+    </tbody>
+</table>
+{{/if}}
+{{@if}}("cookies")
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Cookie</th>
+        <th>Key</th>
+        <th>Decrypted Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#cookies}}
+    <tr>
+        <td>cookies</td>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/cookies}}
+    <tr>
+        <td>csrf-token-field</td>
+        <td>Forms have:</td>
+        <td>{{@csrf_token}}{{/csrf_token}}</td>
+    </tr>
+    </tbody>
+</table>
+{{/if}}
+{{@if}}("session_data")
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Session Data</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#session_data}}
+    <tr>
+        <td>session_data</td>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/session_data}}
+    </tbody>
+</table>
+{{/if}}
+{{@if}}("user_agent_data")
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>User Agent Data</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#user_agent_data}}
+    {{#hr}}
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    {{/hr}}
+    {{^hr}}
+    <tr>
+        <td>user_agent_data</td>
+        <td>{{name}}</td>
+        <td>{{value}}</td>
+    </tr>
+    {{/hr}}
+    {{/user_agent_data}}
+    </tbody>
+</table>
+{{/if}}
+<hr>

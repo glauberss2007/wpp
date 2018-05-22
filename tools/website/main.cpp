@@ -3,15 +3,11 @@
 #include <sstream>
 #include <string>
 #include <w++>
+//#include <pqxx/pqxx>
 
-int main()
-{
-    //wpp::application app;
+int main() {
     wpp::application app;
     setup_mvc(app);
-    //Start server
-    app.port(8080).start();
-    //Wait for server to start so that the client can connect
-    //app.port(9980).multithreaded().run();
+    app.port(8080).multithreaded().start();
     return 0;
 }

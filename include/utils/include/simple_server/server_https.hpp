@@ -39,7 +39,7 @@ namespace SimpleWeb {
         session_id_context = std::to_string(config.port) + ':';
         session_id_context.append(config.address.rbegin(), config.address.rend());
         SSL_CTX_set_session_id_context(context.native_handle(), reinterpret_cast<const unsigned char *>(session_id_context.data()),
-                                       std::min<size_t>(session_id_context.size(), SSL_MAX_SSL_SESSION_ID_LENGTH));
+                                       std::min<std::size_t>(session_id_context.size(), SSL_MAX_SSL_SESSION_ID_LENGTH));
       }
       ServerBase::start();
     }
@@ -48,15 +48,17 @@ namespace SimpleWeb {
     asio::ssl::context context;
 
     void accept() override {
-      auto session = std::make_shared<Session>(create_connection(*io_service, context));
+      auto connection = create_connection(*io_service, context);
 
-      acceptor->async_accept(session->connection->socket->lowest_layer(), [this, session](const error_code &ec) {
-        auto lock = session->connection->handler_runner->continue_lock();
+      acceptor->async_accept(connection->socket->lowest_layer(), [this, connection](const error_code &ec) {
+        auto lock = connection->handler_runner->continue_lock();
         if(!lock)
           return;
 
         if(ec != asio::error::operation_aborted)
           this->accept();
+
+        auto session = std::make_shared<Session>(config.max_request_streambuf_size, connection);
 
         if(!ec) {
           asio::ip::tcp::no_delay option(true);

@@ -1,0 +1,42 @@
+<section id="recent-works">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h3>Our Tools</h3>
+                <p>Modules to make your business more productive than ever.</p>
+                <div class="btn-group">
+                    <a class="btn btn-danger" href="#scroller" data-slide="prev"><i class="icon-angle-left"></i></a>
+                    <a class="btn btn-danger" href="#scroller" data-slide="next"><i class="icon-angle-right"></i></a>
+                </div>
+                <p class="gap"></p>
+            </div>
+            <div class="col-md-9">
+                <div id="scroller" class="carousel slide">
+                    <div class="carousel-inner">
+                        {{@foreach}}("tools",3)
+                        <div class="item {{#is_first}}active{{/is_first}}">
+                            <div class="row">
+                                {{#chunk}}
+                                <div class="col-xs-4">
+                                    <div class="portfolio-item">
+                                        <div class="item-inner">
+                                            <img class="img-responsive" src="{{thumbnail}}" alt="">
+                                            <h5>
+                                                {{name}}
+                                            </h5>
+                                            <div class="overlay">
+                                                <a class="preview btn btn-danger" title="{{name}}" href="{{img}}" rel="prettyPhoto"><i class="icon-eye-open"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/chunk}}
+                            </div><!--/.row-->
+                        </div><!--/.item-->
+                        {{/foreach}}
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->
+    </div>
+</section><!--/#recent-works-->

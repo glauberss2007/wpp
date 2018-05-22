@@ -2,168 +2,174 @@
 // Created by Alan de Freitas on 01/06/17.
 //
 
-#ifndef SOLVER_COMPILER_SETTINGS_H
-#define SOLVER_COMPILER_SETTINGS_H
+#ifndef ENVIRONMENT_COMPILER_SETTINGS_H
+#define ENVIRONMENT_COMPILER_SETTINGS_H
 
 namespace environment {
     // ad hoc
+    const char* web_root_path = "${WEB_ROOT_PATH}";
+    const char* https_keys_root_path = "${HTTPS_KEYS_ROOT_PATH}";
+    const char* assets_root_path = "${ASSETS_ROOT_PATH}";
+    const char* templates_root_path = "${TEMPLATES_ROOT_PATH}";
+    const char* user_agent_parser_root_path = "${USER_AGENT_PARSER_ROOT_PATH}";
+    const char* database_root_path = "${DATABASE_ROOT_PATH}";
 
     // locations
-    inline const char* project_binary_dir = "${PROJECT_BINARY_DIR}";
-    inline const char* cmake_binary_dir = "${CMAKE_BINARY_DIR}";
-    inline const char* cmake_current_binary_dir = "${CMAKE_CURRENT_BINARY_DIR}";
-    inline const char* project_source_dir = "${PROJECT_SOURCE_DIR}";
-    inline const char* cmake_source_dir = "${CMAKE_SOURCE_DIR}";
-    inline const char* cmake_current_source_dir = "${CMAKE_CURRENT_SOURCE_DIR}";
+    const char* project_binary_dir = "${PROJECT_BINARY_DIR}";
+    const char* cmake_binary_dir = "${CMAKE_BINARY_DIR}";
+    const char* cmake_current_binary_dir = "${CMAKE_CURRENT_BINARY_DIR}";
+    const char* project_source_dir = "${PROJECT_SOURCE_DIR}";
+    const char* cmake_source_dir = "${CMAKE_SOURCE_DIR}";
+    const char* cmake_current_source_dir = "${CMAKE_CURRENT_SOURCE_DIR}";
 
-    inline const char* CMAKE_BINARY_DIR = "${CMAKE_BINARY_DIR}";
-    inline const char* CMAKE_COMMAND = "${CMAKE_COMMAND}";
-    inline const char* CMAKE_CURRENT_BINARY_DIR = "${CMAKE_CURRENT_BINARY_DIR}";
-    inline const char* CMAKE_CURRENT_LIST_FILE = "${CMAKE_CURRENT_LIST_FILE}";
-    inline const char* CMAKE_CURRENT_LIST_DIR = "${CMAKE_CURRENT_LIST_DIR}";
-    inline const char* CMAKE_CURRENT_LIST_LINE = "${CMAKE_CURRENT_LIST_LINE}";
-    inline const char* CMAKE_CURRENT_SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}";
-    inline const char* CMAKE_FILES_DIRECTORY = "${CMAKE_FILES_DIRECTORY}";
-    inline const char* CMAKE_MODULE_PATH = "${CMAKE_MODULE_PATH}";
-    inline const char* CMAKE_ROOT = "${CMAKE_ROOT}";
-    inline const char* CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}";
-    inline const char* EXECUTABLE_OUTPUT_PATH = "${EXECUTABLE_OUTPUT_PATH}";
-    inline const char* LIBRARY_OUTPUT_PATH = "${LIBRARY_OUTPUT_PATH}";
-    inline const char* PROJECT_NAME = "${PROJECT_NAME}";
-    inline const char* CMAKE_PROJECT_NAME = "${CMAKE_PROJECT_NAME}";
-    inline const char* PROJECT_BINARY_DIR = "${PROJECT_BINARY_DIR}";
-    inline const char* PROJECT_SOURCE_DIR = "${PROJECT_SOURCE_DIR}";
+    const char* CMAKE_BINARY_DIR = "${CMAKE_BINARY_DIR}";
+    const char* CMAKE_COMMAND = "${CMAKE_COMMAND}";
+    const char* CMAKE_CURRENT_BINARY_DIR = "${CMAKE_CURRENT_BINARY_DIR}";
+    const char* CMAKE_CURRENT_LIST_FILE = "${CMAKE_CURRENT_LIST_FILE}";
+    const char* CMAKE_CURRENT_LIST_DIR = "${CMAKE_CURRENT_LIST_DIR}";
+    const char* CMAKE_CURRENT_LIST_LINE = "${CMAKE_CURRENT_LIST_LINE}";
+    const char* CMAKE_CURRENT_SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}";
+    const char* CMAKE_FILES_DIRECTORY = "${CMAKE_FILES_DIRECTORY}";
+    const char* CMAKE_MODULE_PATH = "${CMAKE_MODULE_PATH}";
+    const char* CMAKE_ROOT = "${CMAKE_ROOT}";
+    const char* CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}";
+    const char* EXECUTABLE_OUTPUT_PATH = "${EXECUTABLE_OUTPUT_PATH}";
+    const char* LIBRARY_OUTPUT_PATH = "${LIBRARY_OUTPUT_PATH}";
+    const char* PROJECT_NAME = "${PROJECT_NAME}";
+    const char* CMAKE_PROJECT_NAME = "${CMAKE_PROJECT_NAME}";
+    const char* PROJECT_BINARY_DIR = "${PROJECT_BINARY_DIR}";
+    const char* PROJECT_SOURCE_DIR = "${PROJECT_SOURCE_DIR}";
 
     // Environment Variables
-    inline const char* CMAKE_INCLUDE_PATH = "${CMAKE_INCLUDE_PATH}";
-    inline const char* CMAKE_LIBRARY_PATH = "${CMAKE_LIBRARY_PATH}";
-    inline const char* CMAKE_PREFIX_PATH = "${CMAKE_PREFIX_PATH}";
-    inline const char* CMAKE_INSTALL_ALWAYS = "${CMAKE_INSTALL_ALWAYS}";
-    inline const char* DESTDIR = "${DESTDIR}";
+    const char* CMAKE_INCLUDE_PATH = "${CMAKE_INCLUDE_PATH}";
+    const char* CMAKE_LIBRARY_PATH = "${CMAKE_LIBRARY_PATH}";
+    const char* CMAKE_PREFIX_PATH = "${CMAKE_PREFIX_PATH}";
+    const char* CMAKE_INSTALL_ALWAYS = "${CMAKE_INSTALL_ALWAYS}";
+    const char* DESTDIR = "${DESTDIR}";
 
     // System & Compiler Information
-    inline const char* CMAKE_MAJOR_VERSION = "${CMAKE_MAJOR_VERSION}";
-    inline const char* CMAKE_MINOR_VERSION = "${CMAKE_MINOR_VERSION}";
-    inline const char* CMAKE_PATCH_VERSION = "${CMAKE_PATCH_VERSION}";
-    inline const char* CMAKE_TWEAK_VERSION = "${CMAKE_TWEAK_VERSION}";
-    inline const char* CMAKE_VERSION = "${CMAKE_VERSION}";
-    inline const char* CMAKE_SYSTEM = "${CMAKE_SYSTEM}";
-    inline const char* CMAKE_SYSTEM_NAME = "${CMAKE_SYSTEM_NAME}";
-    inline const char* CMAKE_SYSTEM_VERSION = "${CMAKE_SYSTEM_VERSION}";
-    inline const char* CMAKE_SYSTEM_PROCESSOR = "${CMAKE_SYSTEM_PROCESSOR}";
-    inline const char* CMAKE_GENERATOR = "${CMAKE_GENERATOR}";
-    inline const bool UNIX = 0${UNIX};
-    inline const bool WIN32 = 0${WIN32};
-    inline const bool APPLE = 0${APPLE};
-    inline const bool MINGW = 0${MINGW};
-    inline const bool MSYS = 0${MSYS};
-    inline const bool CYGWIN = 0${CYGWIN};
-    inline const bool BORLAND = 0${BORLAND};
-    inline const bool WATCOM = 0${WATCOM};
-    inline const bool MSVC = 0${MSVC};
-    inline const bool MSVC_IDE = 0${MSVC_IDE};
-    inline const bool MSVC60 = 0${MSVC60};
-    inline const bool MSVC70 = 0${MSVC70};
-    inline const bool MSVC71 = 0${MSVC71};
-    inline const bool MSVC80 = 0${MSVC80};
-    inline const bool CMAKE_COMPILER_2005 = 0${CMAKE_COMPILER_2005};
-    inline const bool MSVC90 = 0${MSVC90};
-    inline const bool MSVC10 = 0${MSVC10};
-    inline const char* CMAKE_C_COMPILER_ID = "${CMAKE_C_COMPILER_ID}";
-    inline const char* CMAKE_CXX_COMPILER_ID = "${CMAKE_CXX_COMPILER_ID}";
-    inline const bool CMAKE_COMPILER_IS_GNUCC = 0${CMAKE_COMPILER_IS_GNUCC};
-    inline const bool CMAKE_COMPILER_IS_GNUCXX = 0${CMAKE_COMPILER_IS_GNUCXX};
+    const char* CMAKE_MAJOR_VERSION = "${CMAKE_MAJOR_VERSION}";
+    const char* CMAKE_MINOR_VERSION = "${CMAKE_MINOR_VERSION}";
+    const char* CMAKE_PATCH_VERSION = "${CMAKE_PATCH_VERSION}";
+    const char* CMAKE_TWEAK_VERSION = "${CMAKE_TWEAK_VERSION}";
+    const char* CMAKE_VERSION = "${CMAKE_VERSION}";
+    const char* CMAKE_SYSTEM = "${CMAKE_SYSTEM}";
+    const char* CMAKE_SYSTEM_NAME = "${CMAKE_SYSTEM_NAME}";
+    const char* CMAKE_SYSTEM_VERSION = "${CMAKE_SYSTEM_VERSION}";
+    const char* CMAKE_SYSTEM_PROCESSOR = "${CMAKE_SYSTEM_PROCESSOR}";
+    const char* CMAKE_GENERATOR = "${CMAKE_GENERATOR}";
+    const bool UNIX = 0${UNIX};
+    const bool WIN32 = 0${WIN32};
+    const bool APPLE = 0${APPLE};
+    const bool MINGW = 0${MINGW};
+    const bool MSYS = 0${MSYS};
+    const bool CYGWIN = 0${CYGWIN};
+    const bool BORLAND = 0${BORLAND};
+    const bool WATCOM = 0${WATCOM};
+    const bool MSVC = 0${MSVC};
+    const bool MSVC_IDE = 0${MSVC_IDE};
+    const bool MSVC60 = 0${MSVC60};
+    const bool MSVC70 = 0${MSVC70};
+    const bool MSVC71 = 0${MSVC71};
+    const bool MSVC80 = 0${MSVC80};
+    const bool CMAKE_COMPILER_2005 = 0${CMAKE_COMPILER_2005};
+    const bool MSVC90 = 0${MSVC90};
+    const bool MSVC10 = 0${MSVC10};
+    const char* CMAKE_C_COMPILER_ID = "${CMAKE_C_COMPILER_ID}";
+    const char* CMAKE_CXX_COMPILER_ID = "${CMAKE_CXX_COMPILER_ID}";
+    const bool CMAKE_COMPILER_IS_GNUCC = 0${CMAKE_COMPILER_IS_GNUCC};
+    const bool CMAKE_COMPILER_IS_GNUCXX = 0${CMAKE_COMPILER_IS_GNUCXX};
 
     // Various Options
-    inline const char* CMAKE_SKIP_RULE_DEPENDENCY = "${CMAKE_SKIP_RULE_DEPENDENCY}";
-    inline const char* CMAKE_SKIP_INSTALL_ALL_DEPENDENCY = "${CMAKE_SKIP_INSTALL_ALL_DEPENDENCY}";
-    inline const char* CMAKE_SKIP_RPATH = "${CMAKE_SKIP_RPATH}";
-    inline const char* CMAKE_INCLUDE_CURRENT_DIR = "${CMAKE_INCLUDE_CURRENT_DIR}";
-    inline const char* CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE = "${CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE}";
-    inline const char* CMAKE_VERBOSE_MAKEFILE = "${CMAKE_VERBOSE_MAKEFILE}";
-    inline const char* CMAKE_SUPPRESS_REGENERATION = "${CMAKE_SUPPRESS_REGENERATION}";
-    inline const char* CMAKE_COLOR_MAKEFILE = "${CMAKE_COLOR_MAKEFILE}";
-    inline const char* CMAKE_SKIP_PREPROCESSED_SOURCE_RULES = "${CMAKE_SKIP_PREPROCESSED_SOURCE_RULES}";
-    inline const char* CMAKE_SKIP_ASSEMBLY_SOURCE_RULES = "${CMAKE_SKIP_ASSEMBLY_SOURCE_RULES}";
-    inline const char* CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS = "${CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS}";
+    const char* CMAKE_SKIP_RULE_DEPENDENCY = "${CMAKE_SKIP_RULE_DEPENDENCY}";
+    const char* CMAKE_SKIP_INSTALL_ALL_DEPENDENCY = "${CMAKE_SKIP_INSTALL_ALL_DEPENDENCY}";
+    const char* CMAKE_SKIP_RPATH = "${CMAKE_SKIP_RPATH}";
+    const char* CMAKE_INCLUDE_CURRENT_DIR = "${CMAKE_INCLUDE_CURRENT_DIR}";
+    const char* CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE = "${CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE}";
+    const char* CMAKE_VERBOSE_MAKEFILE = "${CMAKE_VERBOSE_MAKEFILE}";
+    const char* CMAKE_SUPPRESS_REGENERATION = "${CMAKE_SUPPRESS_REGENERATION}";
+    const char* CMAKE_COLOR_MAKEFILE = "${CMAKE_COLOR_MAKEFILE}";
+    const char* CMAKE_SKIP_PREPROCESSED_SOURCE_RULES = "${CMAKE_SKIP_PREPROCESSED_SOURCE_RULES}";
+    const char* CMAKE_SKIP_ASSEMBLY_SOURCE_RULES = "${CMAKE_SKIP_ASSEMBLY_SOURCE_RULES}";
+    const char* CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS = "${CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS}";
 
     // Compilers and Tools
-    inline const char* BUILD_SHARED_LIBS = "${BUILD_SHARED_LIBS}";
-    inline const char* CMAKE_AR = "${CMAKE_AR}";
-    inline const char* CMAKE_BUILD_TYPE = "${CMAKE_BUILD_TYPE}";
-    inline const char* CMAKE_CONFIGURATION_TYPES = "${CMAKE_CONFIGURATION_TYPES}";
-    inline const char* CMAKE_C_COMPILER = "${CMAKE_C_COMPILER}";
-    inline const char* CMAKE_C_FLAGS = "${CMAKE_C_FLAGS}";
-    inline const char* CMAKE_C_FLAGS_DEBUG = "${CMAKE_C_FLAGS_DEBUG}";
-    inline const char* CMAKE_C_FLAGS_RELEASE = "${CMAKE_C_FLAGS_RELEASE}";
-    inline const char* CMAKE_C_FLAGS_RELWITHDEBINFO = "${CMAKE_C_FLAGS_RELWITHDEBINFO}";
-    inline const char* CMAKE_CFG_INTDIR = "${CMAKE_CFG_INTDIR}";
-    inline const char* CMAKE_CXX_COMPILER = "${CMAKE_CXX_COMPILER}";
-    inline const char* CMAKE_CXX_FLAGS = "${CMAKE_CXX_FLAGS}";
-    inline const char* CMAKE_CXX_FLAGS_DEBUG = "${CMAKE_CXX_FLAGS_DEBUG}";
-    inline const char* CMAKE_CXX_FLAGS_RELEASE = "${CMAKE_CXX_FLAGS_RELEASE}";
-    inline const char* CMAKE_CXX_FLAGS_RELWITHDEBINFO = "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}";
-    inline const char* CMAKE_RANLIB = "${CMAKE_RANLIB}";
-    inline const char* CMAKE_SHARED_LINKER_FLAGS = "${CMAKE_SHARED_LINKER_FLAGS}";
+    const char* BUILD_SHARED_LIBS = "${BUILD_SHARED_LIBS}";
+    const char* CMAKE_AR = "${CMAKE_AR}";
+    const char* CMAKE_BUILD_TYPE = "${CMAKE_BUILD_TYPE}";
+    const char* CMAKE_CONFIGURATION_TYPES = "${CMAKE_CONFIGURATION_TYPES}";
+    const char* CMAKE_C_COMPILER = "${CMAKE_C_COMPILER}";
+    const char* CMAKE_C_FLAGS = "${CMAKE_C_FLAGS}";
+    const char* CMAKE_C_FLAGS_DEBUG = "${CMAKE_C_FLAGS_DEBUG}";
+    const char* CMAKE_C_FLAGS_RELEASE = "${CMAKE_C_FLAGS_RELEASE}";
+    const char* CMAKE_C_FLAGS_RELWITHDEBINFO = "${CMAKE_C_FLAGS_RELWITHDEBINFO}";
+    const char* CMAKE_CFG_INTDIR = "${CMAKE_CFG_INTDIR}";
+    const char* CMAKE_CXX_COMPILER = "${CMAKE_CXX_COMPILER}";
+    const char* CMAKE_CXX_FLAGS = "${CMAKE_CXX_FLAGS}";
+    const char* CMAKE_CXX_FLAGS_DEBUG = "${CMAKE_CXX_FLAGS_DEBUG}";
+    const char* CMAKE_CXX_FLAGS_RELEASE = "${CMAKE_CXX_FLAGS_RELEASE}";
+    const char* CMAKE_CXX_FLAGS_RELWITHDEBINFO = "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}";
+    const char* CMAKE_RANLIB = "${CMAKE_RANLIB}";
+    const char* CMAKE_SHARED_LINKER_FLAGS = "${CMAKE_SHARED_LINKER_FLAGS}";
 
     // Prefixes, Suffixes (Postfixes), and Extensions
-    inline const char* CMAKE_C_IGNORE_EXTENSIONS = "${CMAKE_C_IGNORE_EXTENSIONS}";
-    inline const char* CMAKE_C_OUTPUT_EXTENSION = "${CMAKE_C_OUTPUT_EXTENSION}";
-    inline const char* CMAKE_C_SOURCE_FILE_EXTENSIONS = "${CMAKE_C_SOURCE_FILE_EXTENSIONS}";
-    inline const char* CMAKE_CXX_IGNORE_EXTENSIONS = "${CMAKE_CXX_IGNORE_EXTENSIONS}";
-    inline const char* CMAKE_CXX_OUTPUT_EXTENSION = "${CMAKE_CXX_OUTPUT_EXTENSION}";
-    inline const char* CMAKE_CXX_SOURCE_FILE_EXTENSIONS = "${CMAKE_CXX_SOURCE_FILE_EXTENSIONS}";
-    inline const char* CMAKE_EXECUTABLE_SUFFIX = "${CMAKE_EXECUTABLE_SUFFIX}";
-    inline const char* CMAKE_FIND_LIBRARY_PREFIXES = "${CMAKE_FIND_LIBRARY_PREFIXES}";
-    inline const char* CMAKE_FIND_LIBRARY_SUFFIXES = "${CMAKE_FIND_LIBRARY_SUFFIXES}";
-    inline const char* CMAKE_IMPORT_LIBRARY_PREFIX = "${CMAKE_IMPORT_LIBRARY_PREFIX}";
-    inline const char* CMAKE_IMPORT_LIBRARY_SUFFIX = "${CMAKE_IMPORT_LIBRARY_SUFFIX}";
-    inline const char* CMAKE_LINK_LIBRARY_SUFFIX = "${CMAKE_LINK_LIBRARY_SUFFIX}";
-    inline const char* CMAKE_RC_OUTPUT_EXTENSION = "${CMAKE_RC_OUTPUT_EXTENSION}";
-    inline const char* CMAKE_RC_SOURCE_FILE_EXTENSIONS = "${CMAKE_RC_SOURCE_FILE_EXTENSIONS}";
-    inline const char* CMAKE_SHARED_LIBRARY_PREFIX = "${CMAKE_SHARED_LIBRARY_PREFIX}";
-    inline const char* CMAKE_SHARED_LIBRARY_SUFFIX = "${CMAKE_SHARED_LIBRARY_SUFFIX}";
-    inline const char* CMAKE_SHARED_MODULE_PREFIX = "${CMAKE_SHARED_MODULE_PREFIX}";
-    inline const char* CMAKE_SHARED_MODULE_SUFFIX = "${CMAKE_SHARED_MODULE_SUFFIX}";
-    inline const char* CMAKE_STATIC_LIBRARY_PREFIX = "${CMAKE_STATIC_LIBRARY_PREFIX}";
-    inline const char* CMAKE_STATIC_LIBRARY_SUFFIX = "${CMAKE_STATIC_LIBRARY_SUFFIX}";
-    inline const char* CMAKE_DEBUG_POSTFIX = "${CMAKE_DEBUG_POSTFIX}";
-    inline const char* CMAKE_RELEASE_POSTFIX = "${CMAKE_RELEASE_POSTFIX}";
-    inline const char* CMAKE_config_POSTFIX = "${CMAKE_config_POSTFIX}";
+    const char* CMAKE_C_IGNORE_EXTENSIONS = "${CMAKE_C_IGNORE_EXTENSIONS}";
+    const char* CMAKE_C_OUTPUT_EXTENSION = "${CMAKE_C_OUTPUT_EXTENSION}";
+    const char* CMAKE_C_SOURCE_FILE_EXTENSIONS = "${CMAKE_C_SOURCE_FILE_EXTENSIONS}";
+    const char* CMAKE_CXX_IGNORE_EXTENSIONS = "${CMAKE_CXX_IGNORE_EXTENSIONS}";
+    const char* CMAKE_CXX_OUTPUT_EXTENSION = "${CMAKE_CXX_OUTPUT_EXTENSION}";
+    const char* CMAKE_CXX_SOURCE_FILE_EXTENSIONS = "${CMAKE_CXX_SOURCE_FILE_EXTENSIONS}";
+    const char* CMAKE_EXECUTABLE_SUFFIX = "${CMAKE_EXECUTABLE_SUFFIX}";
+    const char* CMAKE_FIND_LIBRARY_PREFIXES = "${CMAKE_FIND_LIBRARY_PREFIXES}";
+    const char* CMAKE_FIND_LIBRARY_SUFFIXES = "${CMAKE_FIND_LIBRARY_SUFFIXES}";
+    const char* CMAKE_IMPORT_LIBRARY_PREFIX = "${CMAKE_IMPORT_LIBRARY_PREFIX}";
+    const char* CMAKE_IMPORT_LIBRARY_SUFFIX = "${CMAKE_IMPORT_LIBRARY_SUFFIX}";
+    const char* CMAKE_LINK_LIBRARY_SUFFIX = "${CMAKE_LINK_LIBRARY_SUFFIX}";
+    const char* CMAKE_RC_OUTPUT_EXTENSION = "${CMAKE_RC_OUTPUT_EXTENSION}";
+    const char* CMAKE_RC_SOURCE_FILE_EXTENSIONS = "${CMAKE_RC_SOURCE_FILE_EXTENSIONS}";
+    const char* CMAKE_SHARED_LIBRARY_PREFIX = "${CMAKE_SHARED_LIBRARY_PREFIX}";
+    const char* CMAKE_SHARED_LIBRARY_SUFFIX = "${CMAKE_SHARED_LIBRARY_SUFFIX}";
+    const char* CMAKE_SHARED_MODULE_PREFIX = "${CMAKE_SHARED_MODULE_PREFIX}";
+    const char* CMAKE_SHARED_MODULE_SUFFIX = "${CMAKE_SHARED_MODULE_SUFFIX}";
+    const char* CMAKE_STATIC_LIBRARY_PREFIX = "${CMAKE_STATIC_LIBRARY_PREFIX}";
+    const char* CMAKE_STATIC_LIBRARY_SUFFIX = "${CMAKE_STATIC_LIBRARY_SUFFIX}";
+    const char* CMAKE_DEBUG_POSTFIX = "${CMAKE_DEBUG_POSTFIX}";
+    const char* CMAKE_RELEASE_POSTFIX = "${CMAKE_RELEASE_POSTFIX}";
+    const char* CMAKE_config_POSTFIX = "${CMAKE_config_POSTFIX}";
 
     // Build rules
-    inline const char* CMAKE_CXX_CREATE_SHARED_LIBRARY = "${CMAKE_CXX_CREATE_SHARED_LIBRARY}";
-    inline const char* CMAKE_CXX_CREATE_SHARED_MODULE = "${CMAKE_CXX_CREATE_SHARED_MODULE}";
-    inline const char* CMAKE_CXX_CREATE_STATIC_LIBRARY = "${CMAKE_CXX_CREATE_STATIC_LIBRARY}";
-    inline const char* CMAKE_CXX_COMPILE_OBJECT = "${CMAKE_CXX_COMPILE_OBJECT}";
-    inline const char* CMAKE_CXX_LINK_EXECUTABLE = "${CMAKE_CXX_LINK_EXECUTABLE}";
-    inline const char* CMAKE_C_CREATE_SHARED_LIBRARY = "${CMAKE_C_CREATE_SHARED_LIBRARY}";
-    inline const char* CMAKE_C_CREATE_SHARED_MODULE = "${CMAKE_C_CREATE_SHARED_MODULE}";
-    inline const char* CMAKE_C_CREATE_STATIC_LIBRARY = "${CMAKE_C_CREATE_STATIC_LIBRARY}";
-    inline const char* CMAKE_C_COMPILE_OBJECT = "${CMAKE_C_COMPILE_OBJECT}";
-    inline const char* CMAKE_C_LINK_EXECUTABLE = "${CMAKE_C_LINK_EXECUTABLE}";
+    const char* CMAKE_CXX_CREATE_SHARED_LIBRARY = "${CMAKE_CXX_CREATE_SHARED_LIBRARY}";
+    const char* CMAKE_CXX_CREATE_SHARED_MODULE = "${CMAKE_CXX_CREATE_SHARED_MODULE}";
+    const char* CMAKE_CXX_CREATE_STATIC_LIBRARY = "${CMAKE_CXX_CREATE_STATIC_LIBRARY}";
+    const char* CMAKE_CXX_COMPILE_OBJECT = "${CMAKE_CXX_COMPILE_OBJECT}";
+    const char* CMAKE_CXX_LINK_EXECUTABLE = "${CMAKE_CXX_LINK_EXECUTABLE}";
+    const char* CMAKE_C_CREATE_SHARED_LIBRARY = "${CMAKE_C_CREATE_SHARED_LIBRARY}";
+    const char* CMAKE_C_CREATE_SHARED_MODULE = "${CMAKE_C_CREATE_SHARED_MODULE}";
+    const char* CMAKE_C_CREATE_STATIC_LIBRARY = "${CMAKE_C_CREATE_STATIC_LIBRARY}";
+    const char* CMAKE_C_COMPILE_OBJECT = "${CMAKE_C_COMPILE_OBJECT}";
+    const char* CMAKE_C_LINK_EXECUTABLE = "${CMAKE_C_LINK_EXECUTABLE}";
 
     // Expansion Rules
-    inline const char* ASSEMBLY_SOURCE = "${ASSEMBLY_SOURCE}";
-    inline const char* FLAGS = "${FLAGS}";
-    inline const char* LANGUAGE_COMPILE_FLAGS = "${LANGUAGE_COMPILE_FLAGS}";
-    inline const char* LINK_FLAGS = "${LINK_FLAGS}";
-    inline const char* LINK_LIBRARIES = "${LINK_LIBRARIES}";
-    inline const char* OBJECT = "${OBJECT}";
-    inline const char* OBJECTS = "${OBJECTS}";
-    inline const char* OBJECTS_QUOTED = "${OBJECTS_QUOTED}";
-    inline const char* OBJECT_DIR = "${OBJECT_DIR}";
-    inline const char* PREPROCESSED_SOURCE = "${PREPROCESSED_SOURCE}";
-    inline const char* SOURCE = "${SOURCE}";
-    inline const char* TARGET = "${TARGET}";
-    inline const char* TARGET_BASE = "${TARGET_BASE}";
-    inline const char* TARGET_IMPLIB = "${TARGET_IMPLIB}";
-    inline const char* TARGET_INSTALLNAME_DIR = "${TARGET_INSTALLNAME_DIR}";
-    inline const char* TARGET_PDB = "${TARGET_PDB}";
-    inline const char* TARGET_QUOTED = "${TARGET_QUOTED}";
-    inline const char* TARGET_SONAME = "${TARGET_SONAME}";
-    inline const char* TARGET_VERSION_MAJOR = "${TARGET_VERSION_MAJOR}";
-    inline const char* TARGET_VERSION_MINOR = "${TARGET_VERSION_MINOR}";
+    const char* ASSEMBLY_SOURCE = "${ASSEMBLY_SOURCE}";
+    const char* FLAGS = "${FLAGS}";
+    const char* LANGUAGE_COMPILE_FLAGS = "${LANGUAGE_COMPILE_FLAGS}";
+    const char* LINK_FLAGS = "${LINK_FLAGS}";
+    const char* LINK_LIBRARIES = "${LINK_LIBRARIES}";
+    const char* OBJECT = "${OBJECT}";
+    const char* OBJECTS = "${OBJECTS}";
+    const char* OBJECTS_QUOTED = "${OBJECTS_QUOTED}";
+    const char* OBJECT_DIR = "${OBJECT_DIR}";
+    const char* PREPROCESSED_SOURCE = "${PREPROCESSED_SOURCE}";
+    const char* SOURCE = "${SOURCE}";
+    const char* TARGET = "${TARGET}";
+    const char* TARGET_BASE = "${TARGET_BASE}";
+    const char* TARGET_IMPLIB = "${TARGET_IMPLIB}";
+    const char* TARGET_INSTALLNAME_DIR = "${TARGET_INSTALLNAME_DIR}";
+    const char* TARGET_PDB = "${TARGET_PDB}";
+    const char* TARGET_QUOTED = "${TARGET_QUOTED}";
+    const char* TARGET_SONAME = "${TARGET_SONAME}";
+    const char* TARGET_VERSION_MAJOR = "${TARGET_VERSION_MAJOR}";
+    const char* TARGET_VERSION_MINOR = "${TARGET_VERSION_MINOR}";
 }
 
-#endif //SOLVER_COMPILER_SETTINGS_H
+#endif //ENVIRONMENT_COMPILER_SETTINGS_H

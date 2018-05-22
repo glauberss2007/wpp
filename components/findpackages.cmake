@@ -1,31 +1,41 @@
-# Find packages and (if not found) do something about it
-
-# Local modules
+# Set local modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/components/cmake/Modules/")
 
-# find packages for web
-#find_package(Tcmalloc)
-find_package(Threads)
-find_package(OpenSSL)
-if(OPENSSL_FOUND)
-    include_directories(${OPENSSL_INCLUDE_DIR})
+#######################################################
+###       OPENSSL ENCRYPTION LIBRARY                ###
+#######################################################
+if (${APPLE})  # brew install openssl
+    set(OPENSSL_ROOT_DIR /usr/local/opt/openssl/)
 endif()
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+set(ALL_LIBRARIES ${ALL_LIBRARIES} ${OPENSSL_LIBRARIES})
 
-# boost
+#######################################################
+###              BOOST LIBRARIES                    ###
+#######################################################
+# brew install boost
 set(Boost_USE_STATIC_LIBS ON)
 set(boost_lib_names filesystem regex system iostreams date_time chrono timer thread coroutine log program_options serialization)
-find_package(Boost REQUIRED COMPONENTS ${boost_lib_names})
-#if (MSVC)
-#    set(Boost_USE_STATIC_LIBS "On")
-#    find_package( Boost COMPONENTS system iostreams thread regex REQUIRED )
-#else()
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++1y -pedantic -Wextra")
-#    find_package( Boost COMPONENTS system iostreams thread REQUIRED )
-#endif()
+find_package(Boost REQUIRED QUIET COMPONENTS ${boost_lib_names})
 include_directories(${Boost_INCLUDE_DIR})
-set(ALL_LIBRARIES ${Boost_LIBRARIES})
+set(ALL_LIBRARIES ${ALL_LIBRARIES} ${Boost_LIBRARIES})
+message("${Boost_LIBRARIES}")
 
-find_package(PCRE REQUIRED)
-set(ALL_LIBRARIES ${ALL_LIBRARIES} ${PCRE_LIBRARIES})
+#######################################################
+###             POSTGRESQL LIBRARIES                ###
+#######################################################
+# brew install boost
+# find_package(POSTGRES REQUIRED)
+#include_directories(${POSTGRES_INCLUDE_DIRS})
+#set(ALL_LIBRARIES ${ALL_LIBRARIES} ${POSTGRES_LIBRARIES})
+#message("${POSTGRES_LIBRARIES}")
 
-
+#######################################################
+###                 SQLITE LIBRARIES                ###
+#######################################################
+# brew install boost
+find_package(SQLITE3 REQUIRED)
+include_directories(${SQLITE3_INCLUDE_DIRS})
+set(ALL_LIBRARIES ${ALL_LIBRARIES} ${SQLITE3_LIBRARIES})
+message("${SQLITE3_LIBRARIES}")

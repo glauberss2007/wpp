@@ -23,6 +23,9 @@
 #include <iostream>
 #include "termcolor/termcolor.hpp"
 
+using namespace boost;
+using namespace std;
+
 int main() {
     std::cout << termcolor::on_yellow << termcolor::bold << termcolor::underline << "RANGE ALGORITHMS" << termcolor::reset << std::endl;
 
@@ -40,6 +43,9 @@ int main() {
         boost::copy(a, std::ostream_iterator<int>{std::cout, ","});
         std::cout << "\n" << "*boost::max_element(a): " << *boost::max_element(a) << '\n';
         std::cout << "boost::accumulate(a, 0): " << boost::accumulate(a, 0) << '\n';
+        boost::sort(a);
+        boost::copy(a, std::ostream_iterator<int>{std::cout, ","});
+        std::cout << "\n";
     }
 
     std::cout << termcolor::bold << termcolor::underline << "Range algorithms without counterparts in the standard library" << termcolor::reset << std::endl;
@@ -94,6 +100,7 @@ int main() {
         // range for integers without having to use a container or another data structure
         std::cout << "integer_range<int>" << std::endl;
         boost::copy(ir, std::ostream_iterator<int>{std::cout, ","});
+        cout << endl;
     }
 
     std::cout << termcolor::bold << termcolor::underline << "Creating a range for an input stream with boost::istream_range()" << termcolor::reset << std::endl;

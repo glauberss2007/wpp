@@ -5,14 +5,18 @@
 #ifndef WPP_ROUTE_PROPERTIES_H
 #define WPP_ROUTE_PROPERTIES_H
 
-#include "enums.h"
+#include <boost/tokenizer.hpp>
+
 #include "utils/logging.h"
+
+#include "enums.h"
 #include "response.h"
 #include "request.h"
 
 namespace wpp {
 
     using resource_function = std::function<void(wpp::response &, wpp::request &)>;
+
 
     struct route_properties {
         using self_t = route_properties;
@@ -22,6 +26,7 @@ namespace wpp {
         string _uri;
         vector<method> _methods;
         resource_function _func;
+        vector<string> _middleware;
 
         // pre-processed data
         vector<string> _uri_members;
@@ -81,6 +86,16 @@ namespace wpp {
 
         self_t& name(string name){
             _name = name;
+            return *this;
+        }
+
+        self_t& middleware(string name){
+            _middleware.push_back(name);
+            return *this;
+        }
+
+        self_t& middleware(initializer_list<string> l){
+            _middleware.insert(_middleware.end(),l.begin(),l.end());
             return *this;
         }
 

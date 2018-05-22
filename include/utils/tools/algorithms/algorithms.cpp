@@ -18,15 +18,18 @@
 #include "termcolor/termcolor.hpp"
 
 using namespace boost::algorithm;
+using namespace std;
 
 int main() {
     std::cout << termcolor::bold << termcolor::underline << "Testing for exactly one value with boost::algorithm::one_of_equal()" << termcolor::reset << std::endl;
     {
-        std::array<int, 6> a{{0, 5, 2, 1, 4, 3}};
+        std::array<int, 6> a = {0, 5, 2, 1, 4, 3};
         auto predicate = [](int i) { return i == 4; };
         std::cout.setf(std::ios::boolalpha);
-        std::cout << one_of(a.begin(), a.end(), predicate) << '\n';
-        std::cout << one_of_equal(a.begin(), a.end(), 4) << '\n';
+        std::cout << "one_of(a, predicate): " << one_of(a, predicate) << '\n';
+        std::cout << "one_of(a.begin(), a.end(), predicate): " << one_of(a.begin(), a.end(), predicate) << '\n';
+        std::cout << "one_of_equal(a.begin(), a.end(), 4): " << one_of_equal(a.begin(), a.end(), 4) << '\n';
+        std::cout << "one_of_equal(a, 4): " << one_of_equal(a, 4) << '\n';
     }
 
     std::cout << termcolor::bold << termcolor::underline << "More variants of C++11 algorithms" << termcolor::reset << std::endl;

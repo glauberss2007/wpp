@@ -12,427 +12,1686 @@
 #include <thread>
 #include <memory>
 #include <unordered_set>
+#include <unordered_map>
 #include <iostream>
-#include <boost/optional.hpp>
+#include <iomanip>
 
-#include "request.h"
-#include "response.h"
-#include "route_properties.h"
-#include "trie.h"
+#include <boost/optional.hpp>
+#include <boost/optional/optional_io.hpp>
+#include <boost/type_traits.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <utils/traits.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include "utils/stl_shortcuts.h"
 #include "utils/container_overloads.h"
 #include "utils/container_utils.h"
 #include "utils/include/simple_server/server_http.hpp"
+#include "utils/include/simple_server/server_https.hpp"
 #include "utils/logging.h"
 
+#include "utility.hpp"
+#include "request.h"
+#include "response.h"
+#include "route_properties.h"
+#include "trie.h"
+#include "cache.h"
+#include "encryption.h"
+#include "cookie_parser.h"
+
 namespace wpp {
+
+    using namespace std::chrono_literals;
+
+    template<typename T>
+    struct function_traits
+            : public function_traits<decltype(&T::operator())> {
+    };
+    // For generic types, directly use the result of the signature of its 'operator()'
+
+    template<typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType(ClassType::*)(Args...) const>
+        // we specialize for pointers to member function
+    {
+        enum { arity = sizeof...(Args) };
+        // arity is the number of arguments.
+
+        typedef ReturnType result_type;
+
+        template<size_t i>
+        struct arg {
+            typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
+            // the i-th argument is equivalent to the i-th tuple element of a tuple
+            // composed of those arguments.
+        };
+    };
+
+    template<typename T>
+    struct function_traits_variadic
+            : public function_traits_variadic<decltype(&T::operator())> {
+    };
+
+    template<typename... Args>
+    struct pack {};
+
+    template<typename ClassType, typename ReturnType, typename Head, typename Head2, typename Head3, typename... Tails>
+    struct function_traits_variadic<ReturnType(ClassType::*)(Head, Head2, Head3, Tails...) const>
+        // we specialize for pointers to member function
+    {
+        enum { arity = sizeof...(Tails) + 2 };
+
+        typedef ReturnType result_type;
+
+        typedef Head head_type;
+        typedef Head2 head2_type;
+        typedef Head3 head3_type;
+        typedef pack<Tails...> tails_pack;
+
+        template<size_t i>
+        struct arg {
+            typedef typename std::tuple_element<i, std::tuple<Head, Head2, Head3, Tails...>>::type type;
+            // the i-th argument is equivalent to the i-th tuple element of a tuple
+            // composed of those arguments.
+        };
+    };
+
+
+    template<int M, int N>
+    struct compile_time_relational {
+        static const bool greater_than = M > N ? true : false;
+    };
 
     using boost::optional;
     using namespace std;
 
     using resource_function = std::function<void(wpp::response &, wpp::request &)>;
+    using middleware_function = std::function<void(wpp::response &, wpp::request &, std::string parameter, resource_function&)>;
 
     class application {
-    public:
-        using self_t = application;
+        public:
+            friend class request;
 
-        // create dynamic rule
-        // shortcuts to create dynamic rule
-        route_properties& any(std::string rule, resource_function func) {
-            return this->route({method::get, method::delete_, method::head, method::post, method::put, method::options,
-                                method::connect, method::trace}, rule, func);
-        }
+            using self_t = application;
+            using byte = unsigned char;
 
-        route_properties& get(std::string rule, resource_function func) {
-            return this->route({method::get}, rule, func);
-        }
-
-        route_properties& delete_(std::string rule, resource_function func) {
-            return this->route({method::delete_}, rule, func);
-        }
-
-        route_properties& head(std::string rule, resource_function func) {
-            return this->route({method::head}, rule, func);
-        }
-
-        route_properties& post(std::string rule, resource_function func) {
-            return this->route({method::post}, rule, func);
-        }
-
-        route_properties& put(std::string rule, resource_function func) {
-            return this->route({method::put}, rule, func);
-        }
-
-        route_properties& options(std::string rule, resource_function func) {
-            return this->route({method::options}, rule, func);
-        }
-
-        route_properties& connect(std::string rule, resource_function func) {
-            return this->route({method::connect}, rule, func);
-        }
-
-        route_properties& trace(std::string rule, resource_function func) {
-            return this->route({method::trace}, rule, func);
-        }
-
-        route_properties& redirect(std::string from, std::string to) {
-            resource_function func = [this,to](wpp::response &res, wpp::request &req){
-                auto to_route = this->route(to);
-                to_route.second._func(res,req);
-            };
-            return this->any(from, func);
-        }
-
-        self_t &on_error(std::function<void(wpp::request, const boost::system::error_code &)> func) {
-            this->on_error_ = func;
-            return *this;
-        }
-
-        self_t &default_resource(std::initializer_list<wpp::method> l,
-                                 std::function<void(wpp::response &res, wpp::request &req)> func) {
-            for (auto &&m : l) {
-                this->default_resource_[(int) m] = func;
+            // shortcuts to create routes
+            template<class FUNC_TYPE = resource_function>
+            route_properties &any(std::string rule, FUNC_TYPE func) {
+                return this->route(
+                        {method::get, method::delete_, method::head, method::post, method::put, method::options,
+                         method::connect, method::trace}, rule, func);
             }
-            return *this;
-        }
 
-        self_t &default_resource(std::function<void(wpp::response &res, wpp::request &req)> func) {
-            default_resource({method::get}, func);
-            return *this;
-        }
-
-        route_properties& route(std::initializer_list<wpp::method> l, std::string _rule, resource_function func) {
-            route_properties t (_rule,vector<method>(l.begin(),l.end()),func);
-            _routes.push_back(t);
-            return _routes.back();
-        }
-
-        std::pair<resource_function, routing_params> get_resource(std::string path, method m) {
-            // Find path- and method-match, and call write_server_response_
-            // create a regex match
-            auto r = _route_trie.find(path,m);
-            if (std::get<0>(r)){
-                return std::make_pair(_routes[std::get<1>(r)]._func, std::move(std::get<2>(r)));
-            } else {
-                return std::make_pair(nullptr, std::move(std::get<2>(r)));
+            template<class FUNC_TYPE = resource_function>
+            route_properties &get(std::string rule, FUNC_TYPE func) {
+                return this->route({method::get}, rule, func);
             }
-        }
 
-        unsigned &port() {
-            return this->_port;
-        }
-
-        self_t& port(unsigned port) {
-            this->_port = port;
-            return *this;
-        }
-
-        string url_for(string route_name){
-            auto it = _route_by_name.find(route_name);
-            // todo: consider route parameters
-            if (it != _route_by_name.end()){
-                return _routes[it->second]._uri;
-            } else {
-                return "";
+            template<class FUNC_TYPE = resource_function>
+            route_properties &delete_(std::string rule, FUNC_TYPE func) {
+                return this->route({method::delete_}, rule, func);
             }
-        }
 
-        pair<bool,route_properties> route(string route_name){
-            auto it = _route_by_name.find(route_name);
-            if (it != _route_by_name.end()){
-                return make_pair(true,_routes[it->second]);
-            } else {
-                return make_pair(false,_routes[0]);
+            template<class FUNC_TYPE = resource_function>
+            route_properties &head(std::string rule, FUNC_TYPE func) {
+                return this->route({method::head}, rule, func);
             }
-        }
 
-        self_t& redirect(string route_name, wpp::response &res, wpp::request &req){
-            // todo: consider route parameters
-            pair<bool,route_properties> r = this->route(route_name);
-            if (r.first){
-                r.second._func(res,req);
+            template<class FUNC_TYPE = resource_function>
+            route_properties &post(std::string rule, FUNC_TYPE func) {
+                return this->route({method::post}, rule, func);
             }
-            return *this;
-        }
 
-        self_t& start() {
-            log::info << "http://localhost:" << this->_port << "/" << std::endl;
-            log::debug << "ROUTES" << std::endl;
-            utils::sort(_routes, [](route_properties& a,route_properties& b){return a._uri < b._uri;});
-            // optimize data
-            for (int i = 0; i < _routes.size(); ++i) {
-                log::debug << _routes[i]._uri << std::endl;
-                // include name in app set for faster lookup
-                if (_routes[i]._name != ""){
-                    _route_by_name[_routes[i]._name] = i;
+            template<class FUNC_TYPE = resource_function>
+            route_properties &put(std::string rule, FUNC_TYPE func) {
+                return this->route({method::put}, rule, func);
+            }
+
+            template<class FUNC_TYPE = resource_function>
+            route_properties &options(std::string rule, FUNC_TYPE func) {
+                return this->route({method::options}, rule, func);
+            }
+
+            template<class FUNC_TYPE = resource_function>
+            route_properties &connect(std::string rule, FUNC_TYPE func) {
+                return this->route({method::connect}, rule, func);
+            }
+
+            template<class FUNC_TYPE = resource_function>
+            route_properties &trace(std::string rule, FUNC_TYPE func) {
+                return this->route({method::trace}, rule, func);
+            }
+
+            // Canonical Form
+            // Defining behaviour for 2 parameters (canonical form):
+            // void(response&,request&)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                // append contextual prefixes
+                string str;
+                bool first = true;
+                for (auto &&partial_prefix : this->_group_prefix_context) {
+                    if (first){
+                        str += boost::trim_copy_if(partial_prefix,boost::is_any_of("/ "));
+                        first = false;
+                    } else {
+                        str += "/" + boost::trim_copy_if(partial_prefix,boost::is_any_of("/ "));
+                    }
                 }
-                // create trie
-                _route_trie.add(_routes[i], i);
+                if (str.empty()){
+                    _rule = boost::trim_copy_if(_rule,boost::is_any_of("/ "));
+                } else {
+                    _rule = str + "/" + boost::trim_copy_if(_rule,boost::is_any_of("/ "));
+                }
+                route_properties t(_rule, vector<method>(l.begin(), l.end()), func);
+                // append middlewares from the context
+                for (auto &&group_middlewares : this->_group_middleware_context) {
+                    for (auto &&m : group_middlewares) {
+                        t.middleware(m);
+                    }
+                }
+                this->_routes.push_back(t);
+                return _routes.back();
             }
-            // disp settings
-            log::debug << "ROUTES TRIE: " << std::endl;
-            _route_trie.debug_print();
-            // settings
-            using namespace std;
-            using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
-            HttpServer server;
-            server.config.port = this->_port;
-            if (this->_multithreaded){
-                server.config.thread_pool_size = std::thread::hardware_concurrency();
+
+            route_properties &redirect(std::string from, std::string to) {
+                resource_function func = [this, to](wpp::response &res, wpp::request &req) {
+                    auto to_route = this->route(to);
+                    to_route.second._func(res, req);
+                };
+                return this->any(from, func);
             }
-            application& this_application = *this;
-            // all routes
-            for (int i = 0; i < number_of_methods(); ++i) {
-                server.default_resource[method_string((method)i)] = [&this_application](std::shared_ptr<HttpServer::Response> response,
-                                                    std::shared_ptr<HttpServer::Request> request) {
-                    // convert request
-                    wpp::request req;
-                    req.body = request->content.string();
-                    req.headers = ci_map(request->header.begin(),request->header.end());
-                    req.method_requested = wpp::method_enum(request->method);
-                    typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-                    boost::char_separator<char> sep{"&",";"};
-                    tokenizer tok{request->query_string, sep};
-                    // for each token
-                    for (const auto &t : tok) {
-                        std::smatch sm;
-                        if (std::regex_match(t,sm,std::regex("^([^\\=\\&;]+)(\\=([^\\&;]+))?$"))){
-                            if (sm.size() == 2){
-                                req.url_params.insert(pair<string,string>(sm[1],""));
-                            } else {
-                                req.url_params.insert(pair<string,string>(sm[1],sm[3]));
+
+            self_t &on_error(std::function<void(wpp::request, const boost::system::error_code &)> func) {
+                this->on_error_ = func;
+                return *this;
+            }
+
+            self_t &default_resource(std::initializer_list<wpp::method> l,
+                                     std::function<void(wpp::response &res, wpp::request &req)> func) {
+                for (auto &&m : l) {
+                    this->default_resource_[(int) m] = func;
+                }
+                return *this;
+            }
+
+            self_t &default_resource(std::function<void(wpp::response &res, wpp::request &req)> func) {
+                default_resource({method::get}, func);
+                return *this;
+            }
+
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &error(wpp::status_code s, FUNC func) {
+                route_properties t("", {method::get, method::post, method::options, method::connect, method::delete_,
+                                        method::head, method::put, method::trace}, func);
+                this->_error_routes.push_back({s, t});
+                return _routes.back();
+            }
+
+            void error(wpp::status_code s, wpp::response& res, wpp::request& req) {
+                vector<pair<wpp::status_code, route_properties>>::iterator error_route_iter = find_if(
+                        this->_error_routes,
+                        [s](pair<status_code, route_properties> &x) {
+                            return x.first ==
+                                    s;
+                        });
+                // convert response from wpp back to driver
+                if (error_route_iter != this->_error_routes.end()) {
+                    req.current_route = &(error_route_iter->second);
+                    req.current_route->_func(res, req);
+                } else {
+                    std::vector<std::pair<status_code, std::string>> status_strings = wpp::status_codes();
+                    std::vector<std::pair<status_code, std::string>>::iterator code_string_iter = find_if(
+                            status_strings.begin(), status_strings.end(),
+                            [s](std::pair<status_code, std::string> &x) {
+                                return x.first == s;
+                            });
+                    if (code_string_iter != status_strings.end()){
+                        res.body = "Error: " + code_string_iter->second;
+                    } else {
+                        res.body = "Error " + to_string((int)s);
+                    }
+                }
+                res.code = s;
+            }
+
+            self_t& middleware(std::string name, std::function<void(wpp::response&,wpp::request&,wpp::resource_function&)> middleware_func){
+                using namespace std::placeholders;
+                std::function<void(wpp::response&,wpp::request&,std::string,wpp::resource_function&)> base_middleware_func =
+                        [middleware_func](wpp::response& res,wpp::request& req,std::string str, wpp::resource_function& func){
+                            middleware_func(res,req,func);
+                        };
+                _middleware_functions[name] = base_middleware_func;
+                return *this;
+            }
+
+            self_t& middleware(std::string name, wpp::middleware_function func){
+                _middleware_functions[name] = func;
+                return *this;
+            }
+
+            self_t& middleware_group(std::string name, initializer_list<string> middlewares){
+                _middleware_groups[name] = std::vector<string>(middlewares.begin(),middlewares.end());
+                return *this;
+            }
+
+            self_t& group(initializer_list<std::string> middlewares, std::function<void(application&)> register_routes_func){
+                return this->group("", middlewares, register_routes_func);
+            }
+
+            self_t& group(std::string prefix, initializer_list<std::string> middlewares, std::function<void(application&)> register_routes_func){
+                _group_prefix_context.push_back(prefix);
+                _group_middleware_context.push_back(vector<string>(middlewares.begin(),middlewares.end()));
+                register_routes_func(*this);
+                _group_prefix_context.pop_back();
+                _group_middleware_context.pop_back();
+                return *this;
+            }
+
+            // The route function depends first of all on the number of parameters
+            // 2+ parameters
+            template<typename FUNC, typename std::enable_if<compile_time_relational<function_traits<FUNC>::arity, 2>::greater_than>::type * = nullptr>
+            route_properties &
+            route(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                return this->route2plus(l, _rule, func, parameters_consumed);
+            }
+
+            // 2 parameters
+            template<typename FUNC, typename std::enable_if<function_traits<FUNC>::arity == 2>::type * = nullptr>
+            route_properties &
+            route(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                return this->route2p(l, _rule, func, parameters_consumed);
+            }
+
+            // 1 parameter
+            template<typename FUNC, typename std::enable_if<function_traits<FUNC>::arity == 1>::type * = nullptr>
+            route_properties &
+            route(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                return this->route1p(l, _rule, func, parameters_consumed);
+            }
+
+            // 0 parameters (return type cannot be void)
+            template<typename FUNC, typename std::enable_if<function_traits<FUNC>::arity == 0>::type * = nullptr>
+            route_properties &route(std::initializer_list<wpp::method> l,
+                                    std::string _rule,
+                                    FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) {
+                    res = (func());
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // when we have query parameters, this parameters are converted according to the type
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, int>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoi(*q);
+                } else {
+                    return 0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<int>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoi(*q);
+                } else {
+                    return optional<int>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, long int>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stol(*q);
+                } else {
+                    return 0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<long int>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stol(*q);
+                } else {
+                    return optional<long int>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, unsigned int>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoul(*q);
+                } else {
+                    return 0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<unsigned int>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoul(*q);
+                } else {
+                    return optional<unsigned int>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, long long>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoll(*q);
+                } else {
+                    return 0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<long long>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoll(*q);
+                } else {
+                    return optional<long long>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, unsigned long long>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoull(*q);
+                } else {
+                    return 0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<unsigned long long>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stoull(*q);
+                } else {
+                    return optional<unsigned long long>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, float>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stof(*q);
+                } else {
+                    return 0.0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<float>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stof(*q);
+                } else {
+                    return optional<float>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, double>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stod(*q);
+                } else {
+                    return 0.0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<double>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stod(*q);
+                } else {
+                    return optional<double>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, long double>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stold(*q);
+                } else {
+                    return 0.0;
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<long double>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::stold(*q);
+                } else {
+                    return optional<long double>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, std::string>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return string(*q);
+                } else {
+                    return string("");
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<std::string>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                return q;
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, char *>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::string(*q);
+                } else {
+                    return string("");
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<char *>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::string(*q);
+                } else {
+                    return optional<char *>{};
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, const char *>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::string(*q);
+                } else {
+                    return string("");
+                }
+            }
+
+            template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, optional<const char *>>::value>::type * = nullptr>
+            QUERY_PARAM convert_query_parameter(optional<std::string> q) {
+                if (q) {
+                    return std::string(*q);
+                } else {
+                    return optional<const char *>{};
+                }
+            }
+
+
+            // void(request&,response&)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [this, func](wpp::response &res,
+                                                                                                   wpp::request &req) -> void {
+                    func(req, res);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // void(response&,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+
+                    log::debug << "Parameter " << 1 << " receiving query parameter " << parameters_consumed << " ("
+                               << req.query_parameters.get(parameters_consumed) << ")" << std::endl;
+                    func(res, this->convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                            req.query_parameters.get_optional(parameters_consumed)));
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed + 1);
+            }
+
+            // response(response&,request&)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    response res2 = func(res, req);
+                    res.merge(res2);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(request&,response&)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    res = func(req, res);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(request&,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    res = func(req,
+                               this->convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                       req.query_parameters.get_optional(parameters_consumed)));
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed + 1);
+            }
+
+            // response(response&,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    res = func(res,
+                               this->convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                       req.query_parameters.get_optional(parameters_consumed)));
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed + 1);
+            }
+
+            // response(parameter,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    res = func(convert_query_parameter<typename function_traits<FUNC>::template arg<0>::type>(
+                            req.query_parameters.get_optional(parameters_consumed)),
+                               convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                       req.query_parameters.get_optional(parameters_consumed + 1)));
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed + 2);
+            }
+
+            // defining behaviour for 1 parameter
+            // void(response&)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route1p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    func(res);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route1p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                    req.parent_application = this;
+                    res = func(convert_query_parameter<typename function_traits<FUNC>::template arg<0>::type>(
+                            req.query_parameters.get_optional(parameters_consumed)));
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed + 1);
+            }
+
+            // response(response&)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route1p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                            req.parent_application = this;
+                    res = func(res);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(request&)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route1p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func = [parameters_consumed, this, func](
+                        wpp::response &res,
+                        wpp::request &req) -> void {
+                    res.parent_application = this;
+                            req.parent_application = this;
+                    res = func(req);
+                };
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // void(response&,request&,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            func(res, req,
+                                 convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                         req.query_parameters.get_optional(parameters_consumed)));
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // void(request&,response&,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            func(req, res,
+                                 convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                         req.query_parameters.get_optional(parameters_consumed)));
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // void(response&,parameter,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            func(res, convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                    req.query_parameters.get_optional(parameters_consumed)),
+                                 convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                         req.query_parameters.get_optional(parameters_consumed + 1)));
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(response,request,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            res = (func(res, req,
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                                req.query_parameters.get_optional(parameters_consumed))));
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(request,response,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            res = (func(req, res,
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                                req.query_parameters.get_optional(
+                                                        parameters_consumed))));
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(response,parameter,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            res = (func(res,
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                                req.query_parameters.get_optional(
+                                                        parameters_consumed)),
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                                req.query_parameters.get_optional(
+                                                        parameters_consumed + 1))));
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // response(request,parameter,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            res = (func(req,
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                                req.query_parameters.get_optional(
+                                                        parameters_consumed)),
+                                        convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                                req.query_parameters.get_optional(
+                                                        parameters_consumed + 1))));
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // // response(parameter,parameter,parameter)
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    function_traits<FUNC>::arity == 3 &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::response &>::value>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                std::function<void(wpp::response &, wpp::request &)> canonical_func =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            res = (func(
+                                    convert_query_parameter<typename function_traits<FUNC>::template arg<0>::type>(
+                                            req.query_parameters.get_optional(
+                                                    parameters_consumed)),
+                                    convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
+                                            req.query_parameters.get_optional(
+                                                    parameters_consumed + 1)),
+                                    convert_query_parameter<typename function_traits<FUNC>::template arg<2>::type>(
+                                            req.query_parameters.get_optional(
+                                                    parameters_consumed + 2))));
+                        };
+                parameters_consumed += 3;
+                return this->route(l, _rule, canonical_func, parameters_consumed);
+            }
+
+            // workaround to unpack the tails (packing is a workaround to pass it as parameter)
+            template<typename FUNC, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                return route2plus(l, _rule, func, typename function_traits_variadic<FUNC>::tails_pack(),
+                                  parameters_consumed);
+            }
+
+            // void(response, request, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head_type, wpp::response &>::value &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head2_type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            func(res, req, head_param, ts...);
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // void(request, response, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head_type, wpp::request &>::value &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head2_type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            func(res, req, head_param, ts...);
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // void(request, parameter, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head_type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits_variadic<FUNC>::head2_type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param1 = convert_query_parameter<typename function_traits_variadic<FUNC>::head2_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            auto head_param2 = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed + 1));
+                            func(res, head_param1, head_param2, ts...);
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // response(response,request, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head_type, wpp::response &>::value &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head2_type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            res = func(res, req, head_param, ts...);
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // response(request, response, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head_type, wpp::request &>::value &&
+                    std::is_same<typename function_traits_variadic<FUNC>::head2_type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            res = func(req, res, head_param, ts...);
+                        };
+                parameters_consumed++;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // response(response, parameter, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits<FUNC>::head_type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::head2_type, wpp::request &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param1 = convert_query_parameter<typename function_traits_variadic<FUNC>::head2_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            auto head_param2 = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed + 1));
+                            res = (func(res, head_param1, head_param2, ts...));
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // response(request, parameter, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    std::is_same<typename function_traits<FUNC>::head_type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::head_type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param1 = convert_query_parameter<typename function_traits_variadic<FUNC>::head2_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            auto head_param2 = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed + 1));
+                            res = func(req, head_param1, head_param2, ts...);
+                        };
+                parameters_consumed += 2;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            // response(parameter, parameter, parameter, tails...)
+            template<typename FUNC, typename... Tails, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than &&
+                    !std::is_same<typename function_traits<FUNC>::head_type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::head_type, wpp::response &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::head2_type, wpp::request &>::value &&
+                    !std::is_same<typename function_traits<FUNC>::head2_type, wpp::response &>::value>::type * = nullptr>
+            route_properties &
+            route2plus(std::initializer_list<wpp::method> l,
+                       std::string _rule,
+                       FUNC func,
+                       pack<Tails...>,
+                       int parameters_consumed = 0) {
+                std::function<void(wpp::response &res, wpp::request &req, Tails ... ts)> func_new =
+                        [parameters_consumed, this, func](wpp::response &res, wpp::request &req, Tails ... ts) -> void {
+                            res.parent_application = this;
+                            req.parent_application = this;
+                            auto head_param1 = convert_query_parameter<typename function_traits_variadic<FUNC>::head_type>(
+                                    req.query_parameters.get_optional(parameters_consumed));
+                            auto head_param2 = convert_query_parameter<typename function_traits_variadic<FUNC>::head2_type>(
+                                    req.query_parameters.get_optional(parameters_consumed + 1));
+                            auto head_param3 = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
+                                    req.query_parameters.get_optional(parameters_consumed + 1));
+                            res = (func(head_param1, head_param2, head_param3, ts...));
+                        };
+                parameters_consumed += 3;
+                return this->route(l, _rule, func_new, parameters_consumed);
+            }
+
+            template<typename FUNC, typename std::enable_if<
+                    !std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
+                    compile_time_relational<function_traits<FUNC>::arity, 3>::greater_than>::type * = nullptr>
+            route_properties &route2plus(std::initializer_list<wpp::method> l,
+                                         std::string _rule,
+                                         FUNC func,
+                                         int parameters_consumed = 0) {
+                return route2plus(l, _rule, func, typename function_traits_variadic<FUNC>::tails_pack(),
+                                  parameters_consumed);
+            }
+
+
+
+            std::pair<resource_function, routing_params> get_resource(std::string path, method m) {
+                // Find path- and method-match, and call write_server_response_
+                // create a regex match
+                auto r = _route_trie.find(path, m);
+                if (std::get<0>(r)) {
+                    return std::make_pair(_routes[std::get<1>(r)]._func, std::move(std::get<2>(r)));
+                } else {
+                    return std::make_pair(nullptr, std::move(std::get<2>(r)));
+                }
+            }
+
+            unsigned &port() {
+                return this->_port;
+            }
+
+            self_t &port(unsigned port) {
+                this->_port = port;
+                return *this;
+            }
+
+            self_t &web_root_path(string path) {
+                this->_web_root_path = path;
+                return *this;
+            }
+
+            string &web_root_path() {
+                return this->_web_root_path;
+            }
+
+            self_t &secure(string certificate_file, string key_file) {
+                this->_certificate_file = certificate_file;
+                this->_key_file = key_file;
+                return *this;
+            }
+
+            bool secure() {
+                return (!this->_key_file.empty() && !this->_certificate_file.empty());
+            }
+
+            self_t &assets_root_path(string path) {
+                this->_assets_root_path = path;
+                return *this;
+            }
+
+            string &assets_root_path() {
+                return this->_assets_root_path;
+            }
+
+            self_t &session_name(string name) {
+                this->session_name_ = name;
+                return *this;
+            }
+
+            string &session_name() {
+                return this->session_name_;
+            }
+
+             ;
+            self_t& guard_call_back(std::function<json(wpp::request&)> __guard_call_back) {
+                this->_guard_call_back = __guard_call_back;
+                return *this;
+            }
+
+            std::function<json(wpp::request&)> &guard_call_back() {
+                return this->_guard_call_back;
+            }
+
+            self_t &max_session_inactive_time(std::chrono::duration<double, std::milli> time) {
+                this->max_session_inactive_time_ = time;
+                return *this;
+            }
+
+            std::chrono::duration<double, std::milli> &max_session_inactive_time() {
+                return this->max_session_inactive_time_;
+            }
+
+            self_t &templates_root_path(string path) {
+                this->_templates_root_path = path;
+                return *this;
+            }
+
+            self_t &user_agent_parser_root_path(string path) {
+                this->_user_agent_parser_root_path = path;
+                return *this;
+            }
+
+            self_t &lambda(string name, std::function<std::string(const std::string&)> f) {
+                _lambdas[string("@")+name] = data{basic_lambda<std::string>(f)};
+                return *this;
+            }
+
+            self_t &lambda(string name, std::function<std::string(const std::string&,renderer&)> f) {
+                _lambdas[string("@")+name] = data{basic_lambda2<std::string>{f}};
+                return *this;
+            }
+
+            response::view view(string filename, wpp::json json_data) {
+                return response::view(filename, json_data, _templates_root_path, _lambdas, _view_data, _pre_processed_views, _pre_processed_partials);
+            }
+
+            response::view view(string filename, wpp::json json_data, request& req) {
+                for (json::iterator it = req.view_bag.begin(); it != req.view_bag.end(); ++it) {
+                    json_data.emplace(it.key(),it.value());
+                }
+                return response::view(filename, json_data, _templates_root_path, _lambdas, _view_data, _pre_processed_views, _pre_processed_partials);
+            }
+
+            self_t& view_data(std::string filename, std::function<wpp::json()> func) {
+                _view_data[filename] = func;
+                return *this;
+            }
+
+            self_t &multithreaded(bool on_off = true) {
+                this->_multithreaded = on_off;
+                return *this;
+            }
+
+            string url_for(string route_name) {
+                std::unordered_map<string, unsigned>::iterator it = _route_by_name.find(route_name);
+                // todo: consider route parameters
+                const bool route_exists = it != _route_by_name.end();
+                if (route_exists) {
+                    const route_properties chosen_route = _routes[it->second];
+                    string uri;
+                    for (const string item : chosen_route._uri_members) {
+                        uri += item + "/";
+                    }
+                    return this->web_root_path() + uri;
+                } else {
+                    return this->web_root_path();
+                }
+            }
+
+            string asset(string asset_name) {
+                return this->web_root_path() + asset_name;
+            }
+
+            pair<bool, route_properties> route(string route_name) {
+                auto it = _route_by_name.find(route_name);
+                if (it != _route_by_name.end()) {
+                    return make_pair(true, _routes[it->second]);
+                } else {
+                    return make_pair(false, _routes[0]);
+                }
+            }
+
+            self_t &redirect(string route_name, wpp::response &res, wpp::request &req) {
+                // todo: consider route parameters
+                pair<bool, route_properties> r = this->route(route_name);
+                if (r.first) {
+                    r.second._func(res, req);
+                }
+                return *this;
+            }
+
+            cache& cache(){
+                return cache_;
+            }
+
+            void setup_trie(){
+                for (int i = 0; i < _routes.size(); ++i) {
+                    // include name in app set for faster lookup
+                    if (_routes[i]._name != "") {
+                        _route_by_name[_routes[i]._name] = i;
+                    }
+                    // create trie
+                    _route_trie.add(_routes[i], i);
+                }
+            }
+
+            template <typename Pointer_to_Server_Request = std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request>>
+            void simple_server_to_wpp_request(application& this_application,Pointer_to_Server_Request& request,wpp::request& req){
+                req.parent_application = &this_application;
+                // convert/parse request
+                // method / protocol
+                req.method_requested = wpp::method_enum(request->method);
+                req.method_string = request->method;
+                req.http_version = request->http_version;
+                // client
+                req.remote_endpoint_address = request->remote_endpoint_address();
+                req.remote_endpoint_port = request->remote_endpoint_port();
+                // url
+                req.url_ = request->path;
+                // Content
+                req.body = request->content.string();
+                // Headers and cookies
+                req.headers = ci_map(request->header.begin(), request->header.end());
+                req.parse_cookies();
+                // Query string
+                req.query_string = std::move(request->query_string);
+                req.request_parameters = QueryString::parse(req.query_string);
+                // Posted content
+                unordered_multimap<std::string, std::string>::iterator content_iterator = req.headers.find("Content-Type");
+                if (req.method_requested != method::get && !req.body.empty() && content_iterator->second == "application/x-www-form-urlencoded"){
+                    // todo: Recognize other POST Content-Types (json and encrypted file)
+                    CaseInsensitiveMultimap post_params = QueryString::parse(req.body);
+                    std::move(post_params.begin(),post_params.end(),std::inserter(req.request_parameters,req.request_parameters.end()));
+                    wpp::CaseInsensitiveMultimap::iterator method_parameter_iter = req.request_parameters.find("_method");
+                    if (method_parameter_iter != req.request_parameters.end()){
+                        req.method_requested = wpp::method_enum(method_parameter_iter->second);
+                        req.method_string = wpp::method_string(req.method_requested);
+                    }
+                }
+            }
+
+            // Trick to define a recursive function within this scope (for example purposes)
+            // the trick reads a piece of data and sends little by little
+            template <class HttpServer>
+            class FileServer {
+                public:
+                    static void
+                    read_and_send(const std::shared_ptr<typename HttpServer::Response> &response,
+                                  const std::shared_ptr<ifstream> &ifs) {
+                        // Read and send 128 KB at a time
+                        std::array<char, 1024 * 128> buffer;
+                        streamsize read_length = ifs->read(&buffer[0], static_cast<streamsize>(buffer.size())).gcount();
+                        // if we could read more than 0 bytes
+                        if (read_length > 0) {
+                            // write the buffer to response
+                            response->write(&buffer[0], read_length);
+                            // if we had to use the whole buffer (i.e. if there's more to read)
+                            if (read_length == static_cast<streamsize>(buffer.size())) {
+                                // send more to be sent
+                                response->send(
+                                        [response, ifs](const SimpleWeb::error_code &ec) {
+                                            if (!ec) {
+                                                // this "more to be sent" recursively includes the read data...
+                                                read_and_send(response, ifs);
+                                            } else {
+                                                cerr << "Connection interrupted" << endl;
+                                            }
+                                        });
                             }
                         }
                     }
-                    req.method_string = request->method;
-                    req.raw_url = request->path;
-                    req.url = request->path;
-                    req.path = request->path;
-                    req.http_version = request->http_version;
-                    req.remote_endpoint_address = request->remote_endpoint_address;
-                    req.remote_endpoint_port = request->remote_endpoint_port;
-                    // ask wpp what to do
-                    std::tuple<bool, unsigned, routing_params> wpp_reply = this_application._route_trie.find(req.url,req.method_requested);
-                    req.query_parameters = std::get<2>(wpp_reply);
-                    // convert response from wpp back to driver
-                    if (std::get<0>(wpp_reply)){
-                        req.current_route = &this_application._routes[std::get<1>(wpp_reply)];
+            };
+
+            template<class HttpServer>
+            HttpServer* return_server_object();
+
+            self_t &start() {
+                if (!this->secure()){
+                    return start_aux<SimpleWeb::Server<SimpleWeb::HTTP>>();
+                } else {
+                    return start_aux<SimpleWeb::Server<SimpleWeb::HTTPS>>();
+                }
+            }
+
+            template <class HttpServer>
+            self_t &start_aux() {
+                //log::info << "http://localhost:" << this->_port << "/" << std::endl;
+                log::info << this->web_root_path() << std::endl;
+                // sort routes
+                utils::sort(_routes, [](route_properties &a, route_properties &b) { return a._uri < b._uri; });
+                // optimize data in a trie
+                setup_trie();
+                log::debug << "ROUTES TRIE: " << std::endl;
+                _route_trie.debug_print();
+                using namespace std::placeholders;
+                // Replace middleware groups by middleware routes
+                for (route_properties &route : _routes) {
+                    vector<string> _middleware_routes;
+                    for (string &middlename : route._middleware) {
+                        if (this->_middleware_groups.count(middlename)){
+                            _middleware_routes.insert(_middleware_routes.end(),_middleware_groups[middlename].begin(),_middleware_groups[middlename].end());
+                        } else if (_middleware_functions.count(middlename)){
+                            _middleware_routes.push_back(middlename);
+                        }
+                    }
+                    route._middleware = _middleware_routes;
+                }
+                // Apply middleware to routes
+                for (route_properties &route : _routes) {
+                    for (vector<string>::reverse_iterator iter = route._middleware.rbegin(); iter != route._middleware.rend(); iter++) {
+                        string middleware_declaration = *iter;
+                        string middleware_name;
+                        string middleware_parameter;
+                        size_t found = middleware_declaration.rfind(':');
+                        if (found!=std::string::npos){
+                            middleware_parameter = middleware_declaration.substr(found+1);
+                            middleware_name = middleware_declaration.substr(0,found);
+                        } else {
+                            middleware_name = middleware_declaration;
+                        }
+                        std::map<string, middleware_function>::iterator middleware_pair_iter = _middleware_functions.find(middleware_name);
+                        const bool the_middleware_exists = middleware_pair_iter != this->_middleware_functions.end();
+                        if (the_middleware_exists){
+                            route._func = std::bind(middleware_pair_iter->second,_1,_2,middleware_parameter,route._func);
+                        }
+                    }
+                }
+
+                // Apply settings
+                using namespace std;
+
+                unique_ptr<HttpServer> server(return_server_object<HttpServer>());
+
+                server->config.port = this->_port;
+                if (this->_multithreaded) {
+                    server->config.thread_pool_size = std::thread::hardware_concurrency();
+                }
+
+                // register all routes by method
+                application &this_application = *this;
+                for (int i = 0; i < number_of_methods(); ++i) {
+                    server->default_resource[method_string(
+                            (method) i)] = [&this_application,i](std::shared_ptr<typename HttpServer::Response> response,
+                                                               std::shared_ptr<typename HttpServer::Request> request) {
+
+                        wpp::request req;
                         wpp::response res;
-                        this_application._routes[std::get<1>(wpp_reply)]._func(res,req);
-                        SimpleWeb::CaseInsensitiveMultimap server_headers(res.headers.begin(),res.headers.end());
-                        response->write((SimpleWeb::StatusCode)((int)res.code), res.body, server_headers);
-                    } else {
-                        // try to find file resource
-                        try {
-                            auto web_root_path = boost::filesystem::canonical("web");
-                            auto path = boost::filesystem::canonical(web_root_path / request->path);
-                            // Check if path is within web_root_path
-                            if (distance(web_root_path.begin(), web_root_path.end()) > distance(path.begin(), path.end()) ||
-                                !equal(web_root_path.begin(), web_root_path.end(), path.begin())) {
-                                throw invalid_argument("path must be within root path");
-                            }
-                            if (boost::filesystem::is_directory(path)) {
-                                path /= "index.html";
-                            }
+                        res.parent_application = &this_application;
+                        this_application.simple_server_to_wpp_request(this_application, request, req);
 
-                            SimpleWeb::CaseInsensitiveMultimap header;
-
-                            //    Uncomment the following line to enable Cache-Control
-                            //    header.emplace("Cache-Control", "max-age=86400");
-
-                            #ifdef HAVE_OPENSSL
-                            //    Uncomment the following lines to enable ETag
-            //    {
-            //      ifstream ifs(path.string(), ifstream::in | ios::binary);
-            //      if(ifs) {
-            //        auto hash = SimpleWeb::Crypto::to_hex_string(SimpleWeb::Crypto::md5(ifs));
-            //        header.emplace("ETag", "\"" + hash + "\"");
-            //        auto it = request->header.find("If-None-Match");
-            //        if(it != request->header.end()) {
-            //          if(!it->second.empty() && it->second.compare(1, hash.size(), hash) == 0) {
-            //            response->write(SimpleWeb::StatusCode::redirection_not_modified, header);
-            //            return;
-            //          }
-            //        }
-            //      }
-            //      else
-            //        throw invalid_argument("could not read file");
-            //    }
-                            #endif
-
-                            auto ifs = make_shared<ifstream>();
-                            ifs->open(path.string(), ifstream::in | ios::binary | ios::ate);
-
-                            if (*ifs) {
-                                auto length = ifs->tellg();
-                                ifs->seekg(0, ios::beg);
-
+                        // Look for the route request
+                        std::tuple<bool, unsigned, routing_params> wpp_reply = this_application._route_trie.find(
+                                req.url_, req.method_requested);
+                        req.query_parameters = std::move(std::get<2>(wpp_reply));
+                        const unsigned route_pos = std::get<1>(wpp_reply);
+                        const bool a_valid_route_was_found = std::get<0>(wpp_reply);
+                        //log::info << method_string((method) i) << " Request on " << req.url_ << std::endl;
+                        // Response to the request
+                        if (a_valid_route_was_found) {
+                            // Process request
+                            log::info << method_string((method) i) << " Request: " << req.url_ << std::endl;
+                            req.current_route = &this_application._routes[route_pos];
+                            this_application._routes[route_pos]._func(res, req);
+                            // Write response
+                            if (res._file_response && res._file_response->good()){
+                                // filesize
+                                auto length = res._file_response->tellg();
+                                // go to beggining
+                                res._file_response->seekg(0, ios::beg);
+                                SimpleWeb::CaseInsensitiveMultimap header;
                                 header.emplace("Content-Length", to_string(length));
                                 response->write(header);
-
-                                // Trick to define a recursive function within this scope (for example purposes)
-                                class FileServer {
-                                    public:
-                                        static void read_and_send(const std::shared_ptr<HttpServer::Response> &response,
-                                                                  const std::shared_ptr<ifstream> &ifs) {
-                                            // Read and send 128 KB at a time
-                                            static vector<char> buffer(131072); // Safe when server is running on one thread
-                                            streamsize read_length;
-                                            if ((read_length = ifs->read(&buffer[0], static_cast<streamsize>(buffer.size())).gcount()) >
-                                                0) {
-                                                response->write(&buffer[0], read_length);
-                                                if (read_length == static_cast<streamsize>(buffer.size())) {
-                                                    response->send([response, ifs](const SimpleWeb::error_code &ec) {
-                                                        if (!ec) {
-                                                            read_and_send(response, ifs);
-                                                        } else {
-                                                            cerr << "Connection interrupted" << endl;
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        }
-                                };
-                                FileServer::read_and_send(response, ifs);
+                                FileServer<HttpServer>::read_and_send(response, res._file_response);
                             } else {
-                                throw invalid_argument("could not read file");
-                            }
-                        }
-                        catch (const std::exception &e) {
-                            response->write(SimpleWeb::StatusCode::client_error_bad_request,
-                                            "Could not open path " + request->path + ": " + e.what());
-                        }
-                    }
-                };
-            }
-            // routes
-            server.on_error = [](std::shared_ptr<HttpServer::Request> req, const SimpleWeb::error_code & ec) {
-                log::debug << ec.message() << std::endl;
-            };
-            server.start();
-            return *this;
-        }
+                                response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
 
+                            }
+                            log::info << "Response: " << (int) res.code << " on route \""
+                                      << this_application._routes[std::get<1>(wpp_reply)]._name << "\"" << std::endl;
+                        } else if (this_application.default_resource_[i]) {
+                            resource_function& backup_handle = *this_application.default_resource_[i];
+                            route_properties r = route_properties(req.url_,{wpp::method(i)},backup_handle);
+                            req.current_route = &r;
+                            req.current_route->name("backup_route");
+                            backup_handle(res, req);
+                            res.write_cookie_headers();
+                            if (res._file_response && res._file_response->good()){
+                                auto length = res._file_response->tellg();
+                                res._file_response->seekg(0, ios::beg);
+                                SimpleWeb::CaseInsensitiveMultimap header;
+                                header.emplace("Content-Length", to_string(length));
+                                response->write(header);
+                                FileServer<HttpServer>::read_and_send(response, res._file_response);
+                            } else {
+                                response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
+                            }
+                        } else {
+                            this_application.error(wpp::status_code::client_error_not_found, res, req);
+                            res.write_cookie_headers();
+                            response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
+                        }
+                    };
+                }
+
+                // Routes
+                server->on_error = [](std::shared_ptr<typename HttpServer::Request> req, const SimpleWeb::error_code &ec) {
+                    log::debug << ec.message() << std::endl;
+                };
+
+                server->start();
+                return *this;
+            }
+
+            self_t& set_keys(){
+                // Load the necessary cipher
+                EVP_add_cipher(EVP_aes_256_cbc());
+                // set keys
+                gen_params(key, iv);
+                // return itself
+                return *this;
+            }
+
+            string encrypt(string text){
+                // encrypt
+                secure_string protected_text = std::move(text.c_str());
+                secure_string cyphered_text;
+                aes_encrypt(key.data(), iv.data(), protected_text, cyphered_text);
+                // serialize
+                static const char* const lut = "0123456789abcdef";
+                size_t len = cyphered_text.size();
+                std::string output;
+                output.reserve(2 * len);
+                for (size_t i = 0; i < len; ++i)
+                {
+                    const unsigned char c = cyphered_text[i];
+                    output.push_back(lut[c >> 4]);
+                    output.push_back(lut[c & 15]);
+                }
+                return output;
+            }
+
+            string decrypt(string text, string fallback = ""){
+                bool success = true;
+                text = decrypt(text,success);
+                if (success){
+                    return text;
+                } else {
+                    return fallback;
+                }
+            }
+
+            string decrypt(string text, bool& success){
+                success = false;
+                // deserialize
+                secure_string cyphered_text = std::move(text.c_str());
+                static const char* const lut = "0123456789abcdef";
+                size_t len = cyphered_text.length();
+                if (len & 1) {
+                    return string{""};
+                }
+                secure_string unserialized_cyphered_text;
+                unserialized_cyphered_text.reserve(len / 2);
+                for (size_t i = 0; i < len; i += 2)
+                {
+                    char a = cyphered_text[i];
+                    const char* p = std::lower_bound(lut, lut + 16, a);
+                    if (*p != a){
+                        //return string("not a hex digit");
+                        return string("");
+                    }
+
+                    char b = cyphered_text[i + 1];
+                    const char* q = std::lower_bound(lut, lut + 16, b);
+                    if (*q != b) {
+                        //return string("not a hex digit");
+                        return string("");
+                    }
+                    unserialized_cyphered_text.push_back(((p - lut) << 4) | (q - lut));
+                }
+                secure_string returned_text;
+                // decrypt
+                aes_decrypt(key.data(), iv.data(), unserialized_cyphered_text, returned_text, success);
+                return string(returned_text.c_str());
+            }
+
+            string digest(string message){
+                const unsigned char *std_message = (const byte*)message.c_str();
+                size_t message_len = message.size();
+                unsigned char *digest;
+                unsigned int digest_len;
+                digest_message(std_message , message_len, &digest, &digest_len);
+                string session_id = (char*)digest;
+                // serialize to hexadecimal
+                static const char* const lut = "0123456789abcdef";
+                size_t len = session_id.size();
+                std::string digested_message;
+                digested_message.reserve(2 * len);
+                for (size_t i = 0; i < len; ++i)
+                {
+                    const unsigned char c = session_id[i];
+                    digested_message.push_back(lut[c >> 4]);
+                    digested_message.push_back(lut[c & 15]);
+                }
+                return digested_message;
+            }
 
         private:
-        // routes
-        std::vector<route_properties> _routes;
-        std::unordered_map<string,unsigned> _route_by_name;
-        Trie _route_trie;
+            ///////////////////////////////////////////////////////////////
+            //                         MODEL                             //
+            ///////////////////////////////////////////////////////////////
+            string _assets_root_path = "model/assets";
 
-        // defaults
-        std::array<optional<resource_function>, number_of_methods()> default_resource_;
-        std::function<void(wpp::request, const boost::system::error_code &)> on_error_;
-        // settings
-        unsigned _port = 8080;
-        unsigned _multithreaded = true;
+            ///////////////////////////////////////////////////////////////
+            //                          VIEW                             //
+            ///////////////////////////////////////////////////////////////
+            string _templates_root_path = "view/templates";
+            string _user_agent_parser_root_path = "";
+            basic_data<response::view::string_type> _lambdas;
+            std::unordered_map<std::string,std::function<wpp::json()>> _view_data;
+            unordered_map<std::string, response::pre_processed_view> _pre_processed_views;
+            std::unordered_map<mustache::string_type, response::pre_processed_partial<mustache::string_type>> _pre_processed_partials;
 
+            ///////////////////////////////////////////////////////////////
+            //                      CONTROLLER                           //
+            ///////////////////////////////////////////////////////////////
+            // Routes
+            std::vector<route_properties> _routes;
+            std::unordered_map<string, unsigned> _route_by_name;
+            Trie _route_trie;
+            std::vector<pair<wpp::status_code, route_properties>> _error_routes;
+            std::map<std::string, middleware_function> _middleware_functions;
+            std::map<std::string, vector<std::string>> _middleware_groups;
+            // Route groups
+            std::vector<std::vector<std::string>> _group_middleware_context;
+            std::vector<std::string> _group_prefix_context;
+            // Default routes
+            std::array<optional<resource_function>, number_of_methods()> default_resource_;
+            std::function<void(wpp::request, const boost::system::error_code &)> on_error_;
+            // Guard callback (function the return user data in json format so routes can control access)
+            std::function<json(wpp::request&)> _guard_call_back;
+
+            ///////////////////////////////////////////////////////////////
+            //                          SETTINGS                         //
+            ///////////////////////////////////////////////////////////////
+            // Settings
+            unsigned _port = 8080;
+            bool _multithreaded = true;
+            string _web_root_path = "localhost:8080";
+            // Application utilities
+            size_t _cache_size{100000};
+            std::chrono::duration<double, std::milli> _cache_time{24h};
+            class cache cache_{24h, 10000};
+            // Chryptographic keys
+            vector<byte> key;
+            vector<byte> iv;
+            string _key_file;
+            string _certificate_file;
+            // Cache
+            // Session
+            string session_name_ = {"application_id"};
+            std::chrono::duration<double, std::milli> max_session_inactive_time_ = 5min;
     };
 
+    template <>
+    SimpleWeb::Server<SimpleWeb::HTTP>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTP>>() {
+        return new SimpleWeb::Server<SimpleWeb::HTTP>();
+    }
 
-    /*
-     * DEFINE REGEXES
-     *
-     * Positive Integers  ^\d+$
-Negative Integers  ^-\d+$
-Integer ^-?\d+$
-Positive Number ^\d*\.?\d+$
-Negative Number  ^-\d*\.?\d+$
-Positive Number or Negative Number  ^-?\d*\.?\d+$
-Phone number ^\+?[\d\s]{3,}$
-Phone with code  ^\+?[\d\s]+\(?[\d\s]{10,}$
-Year 1900-2099  ^(19|20)\d{2}$
-Date (dd mm yyyy, d/m/yyyy, etc.)
-^([1-9]|0[1-9]|[12][0-9]|3[01])\D([1-9]|0[1-9]|1[012])\D(19[0-9][0-9]|20[0-9][0-9])$
-IP v4:
+    template <>
+    SimpleWeb::Server<SimpleWeb::HTTPS>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTPS>>() {
+        cout << "Creating a secure server" << endl;
+        return new SimpleWeb::Server<SimpleWeb::HTTPS>(this->_certificate_file, this->_key_file);
+    }
 
-    ^(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]){3}$
-Alphabetic input
 
-Personal Name ^[\w.']{2,}(\s[\w.']{2,})+$
-Username  ^[\w\d_.]{4,}$
-Password at least 6 symbols  ^.{6,}$
-Password or empty input  ^.{6,}$|^$
-email ^[_]*([a-z0-9]+(\.|_*)?)+@([a-z][a-z0-9-]+(\.|-*\.))+[a-z]{2,6}$
-domain ^([a-z][a-z0-9-]+(\.|-*\.))+[a-z]{2,6}$
-
-             * int \d+ [0-9]+
-        * float [0-9]+\.?[0-9]+
-        * word [a-zA-Z_0-9]
-        * string [^/]+
-        * path .+
-        * /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/ (Email Id)
-        * /^([\w-\.]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)([\w- ]+\.)+[\w-]{2,4})?$/ (free/domain specific email id)
-        * /(http(s)?://)?([\w-]+\.)+[\w-]+[.com]+(/[/?%&=]*)?/ (with or without http)
-        * /((www\.|(http|https|ftp|news|file)+\:\/\/)[_.a-z0-9-]+\.[a-z0-9\/_:@=.+?,##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])/( valid everywhere)
-        * / ^[a-z0-9\.@#\$%&]+$/ (only contains letter [a-z] digits[0-9], special characters(@#$%&))
-        * / ^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/ (Minimum 8 characters at least 1 Alphabet and 1 Number)
-        * / ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/ (Minimum 8 characters at least 1 Uppercase Alphabet, 1 Lowercase Alphabet, 1 Number and 1 Special Character)
-        * / ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,10}/ (Minimum 8 and Maximum 10 characters at least 1 Uppercase Alphabet, 1 Lowercase Alphabet, 1 Number and 1 Special Character)
-        * / ^[a-zA-Z0-9\s]{7,16}$/ (Minimum length 7 and Maximum length 16 Characters allowed [a–z] [A-Z] [0-9])
-        * / ^((\+){0,1}91(\s){0,1}(\-){0,1}(\s){0,1}){0,1}9[0-9](\s){0,1}(\-){0,1}(\s){0,1}[1-9]{1}[0-9]{7}$/ (without +91 or 0)
-        * /^((\\+91-?)|0)?[0-9]{10}$/ (with or without +91 or 0)
-        * ^((\\+|00)(\\d{1,3})[\\s-]?)?(\\d{10})$/ (split the number and the country code)
-        * /(?s)^((?!manish).)*$/ (string contains manish)
-        * \d/ (at list one digit )
-        * /(.)*(\\d)(.)* / (contains number)
-        * /^\d$/ (contains only number )
-        * /^\d{11}$/ (contains only 11 digit number )
-        * /^[a-zA-Z]+$/ (contains only letter )
-        * /^[a-zA-Z0-9]+$/ (contains only letter and number )
-        * /^[a-z0-9_-]{3,16}$/ (username)
-        * /^[a-z0-9-]+$/ (slug)
-        * /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/ (email)
-        * /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ (url)
-        * /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/ (IP address)
-        * /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/
-     *
-     *
-     */
 }
 
-// TODO: Implement different syntaxes and regexes for the rules
-// <int?>
-// <[A-Za-z]+>
-
-// TODO: Implement functions to return values from routes
-// string url = route("routename");
-// string url = current_route("routename");
-// string url = current_route_name("routename");
-
-// TODO: Implement different responses
+// TODO: Implement different response types
 // response.redirect().route("routename")
 // response.redirect().route("routename", {'id',20})
 // response.redirect().url('http://www.foo.com')
 
-// TODO: Implement middleware rules besides route rules
-// app.middleware("auth")
-//  ([]{return (user.auth());})
-//
-// app.any("link").middleware("auth")
-// app.any("link").middleware({"auth","can","guest")
-//
-// just like routes, middlewares can access the request
-
-// TODO: Implement middleware groups
-// app.middleware_group("name",{"auth","guest"})
-
-// TODO: implement csrf() on POST, PUT, or DELETE
-// <form action="/foo/bar" method="POST">
-// <input type="hidden" name="_method" value="PUT">
-// or {{ method_field('PUT') }}
-// <input type="hidden" name="_token" value="{{ csrf_token() }}">
-// </form>
-//
-// <meta name="csrf-token" content="{{ csrf_token() }}">
-//
-// generate one csrf in each user session
-// there should be a verify_csrf_token middleware for all post routes
-// XSRF-TOKEN
-
-// TODO: Implement route groups
-// app.group("prefix").middleware("auth")
 
 // TODO: Adapt the crow::request to wpp::request implementing the functions
 // string name = request.input("name");
@@ -486,51 +1745,8 @@ domain ^([a-z][a-z0-9-]+(\.|-*\.))+[a-z]{2,6}$
 //  return view("home.html",data);
 //  return view("home.html",data);
 //  return view("home.html",data).with(data); // just as usual response
-//  implement mechanism to attach functions/data to views
-//  implement mechanism to attach functions/data with a group of views
-
-// TODO: Implement mustache lambdas
-// so we can have the same functions as in blade templates
-// std::string view{"{{#bold}}{{yay}} :){{/bold}}"};
-// mstch::map context{
-//         {"yay", std::string{"Yay!"}},
-//         {"bold", mstch::lambda{[](const std::string& text) -> mstch::node {
-//             return "<b>" + text + "</b>";
-//         }}}
-// };
-//
-// std::cout << mstch::render(view, context) << std::endl;
-// https://github.com/kainjow/Mustache
 
 
-// TODO: All cookies have to be encrypted
-
-// TODO: Keep user sessions
-// there are many alternatives
-// file - sessions are stored in storage/framework/sessions.
-// cookie - sessions are stored in secure, encrypted cookies.
-// database - sessions are stored in a relational database.
-// memcached / redis - sessions are stored in one of these fast, cache based stores.
-// array - sessions are stored in a c++ array and will not be persisted.
-//        Session data:
-//                string("id")  unique();
-//                unsignedInteger("user_id")    nullable();
-//                string("ip_address", 45)  nullable();
-//                text("user_agent")    nullable();
-//                text("payload");
-//                integer("last_activity");
-//
-// request.session("key")
-// request.session().get("key")
-// request.session().get("key","default")
-// json data = request.session().all();
-// json data = request.session().has("users");
-// request.session().put("key", "value");
-// request.session().flash("status", "Task was successful!");
-// request.session().reflash();
-// request.session().>forget("key");
-// request.session().flush();
-// $request.session().regenerate(); // regenerate session id
 
 // TODO: Implement validator
 // wpp::validate(request, {
@@ -541,41 +1757,48 @@ domain ^([a-z][a-z0-9-]+(\.|-*\.))+[a-z]{2,6}$
 // validator.errors().all();
 // define error messages (per error and ad hoc)
 // Rules
+
+// DATA TYPES (can be only one of those)
 // Active URL
-// After (Date)
-// After Or Equal (Date)
 // Alpha
 // Alpha Dash
 // Alpha Numeric
 // Array
-// Before (Date)
-// Before Or Equal (Date)
-// Between
 // Boolean
 // Date
 // Date Format
-// Different
 // Digits
-// Digits Between
-// Dimensions (Image Files)
-// Distinct
 // E-Mail
-// Exists (Database)
 // File
-// Filled
 // Image (File)
-// In
-// In Array
 // Integer
 // IP Address
 // JSON
+// Numeric
+// Regular Expression
+// String
+// Timezone
+// URL
+
+// RULES ON DATA
+// After (Date)
+// After Or Equal (Date)
+// Before (Date)
+// Before Or Equal (Date)
+// Between
+// Different
+// Dimensions (Image Files)
+// Digits Between
+// Distinct
+// Exists (Database)
+// Filled
+// In
+// In Array
 // Max
 // Min
 // Nullable
 // Not In
-// Numeric
 // Present
-// Regular Expression
 // Required
 // Required If
 // Required Unless
@@ -585,12 +1808,10 @@ domain ^([a-z][a-z0-9-]+(\.|-*\.))+[a-z]{2,6}$
 // Required Without All
 // Same
 // Size
-// String
-// Timezone
 // Unique (Database)
-// URL
 
 // TODO: Implement database connection and ORM on cmake
 // make script/program to read the DB and create C++ objects to access data
+
 
 #endif //WPP_APPLICATION_H

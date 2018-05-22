@@ -5,7 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <stdio.h>
-#include <wpp.h>
+#include <wpp>
 
 using namespace std;
 

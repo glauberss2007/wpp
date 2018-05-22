@@ -11,7 +11,6 @@
 #include <type_traits>
 #include "container_overloads.h"
 
-
 namespace utils {
 
     ////////////////////////////////////////////////////////////////
@@ -295,16 +294,6 @@ namespace utils {
         static default_random_engine generator((int) chrono::system_clock::now().time_since_epoch().count());
         return piecewise_linear_distribution<T>(intervals.begin(),intervals.end(),weights.begin())(generator);
     }
-
-
-
-
-
-
-
-
-
-
 };
 
 

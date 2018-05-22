@@ -28,7 +28,7 @@ namespace wpp {
 
     const int TREAT_FOLDER_ALSO_AS_RESOURCE = 1;
 
-
+    using boost::optional;
 
     // trie data structure
     class Trie {
@@ -73,69 +73,118 @@ namespace wpp {
                 typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
                 boost::char_separator<char> sep{"/"};
                 tokenizer tok{req_url, sep};
+                bool fail_to_find_any_node = false;
+                vector<string> tokens(tok.begin(),tok.end());
 
                 // for each token
-                for (const auto &t : tok) {
-                    // try to find it on simple children
-                    auto child_it = nodes_[current_idx].children.find(t);
+                for (vector<string>::iterator tokenIterator = tokens.begin(); tokenIterator != tokens.end() && !fail_to_find_any_node; ++tokenIterator) {
+                    const auto &t = *tokenIterator;
+                    bool a_node_was_found_in_this_iteration = false;
+                    bool this_is_the_last_token = tokenIterator == tokens.end()-1;
 
-                    // if we could find a child
-                    if (child_it != nodes_[current_idx].children.end()) {
+                    // try to find token it on simple string children
+                    auto child_it = nodes_[current_idx].children.find(t);
+                    // if we could find a simple child
+                    auto we_could_find_a_simple_child = child_it != nodes_[current_idx].children.end();
+                    if (we_could_find_a_simple_child) {
+                        // we change the current node
                         current_idx = child_it->second;
-                    } else {
-                        // for each regex child
-                        bool found = false;
-                        for (auto &&param_child : nodes_[current_idx].param_children) {
-                            // try to match all its regexes
-                            found = true;
-                            if (!std::regex_match(t, param_child.formula)){
-                                found = false;
+                        // if this is the last token and the child has a route on the method requested
+                        if (this_is_the_last_token && nodes_[current_idx].rule_index[(int)l] != nullptr){
+                            // we return a struct with this node
+                            return {true, *nodes_[current_idx].rule_index[(int) l], match_params};
+                        }
+                        a_node_was_found_in_this_iteration = true;
+                    }
+
+                    if (!a_node_was_found_in_this_iteration) {
+                        auto& regex_children = nodes_[current_idx].param_children;
+                        for (auto &&param_child : regex_children) {
+                            a_node_was_found_in_this_iteration = true;
+                            if (!std::regex_match(t, param_child.formula)) {
+                                a_node_was_found_in_this_iteration = false;
                             }
-                            if (found){
+                            if (a_node_was_found_in_this_iteration) {
                                 match_params.parameter_name.push_back(param_child.name);
                                 match_params.parameter_trait.push_back(param_child.type);
                                 match_params.parameter_value.push_back(t);
                                 current_idx = param_child.idx;
-                                break;
+                                auto child_has_a_route = nodes_[current_idx].rule_index[(int) l] != nullptr;
+                                if (this_is_the_last_token &&
+                                        child_has_a_route) {
+                                    return {true, *nodes_[current_idx].rule_index[(int) l], match_params};
+                                } else {
+                                    break;
+                                }
                             }
                         }
-                        if (!found){
-                            // we try optional regexes
-                            // for each optional regex child
-                            for (auto &&optional_param_child : nodes_[current_idx].optional_param_children) {
-                                // try to match all its regexes
-                                bool found = true;
-                                if (!std::regex_match(t, optional_param_child.formula)){
-                                    found = false;
-                                }
-                                if (found){
-                                    match_params.parameter_name.push_back(optional_param_child.name);
-                                    match_params.parameter_trait.push_back(optional_param_child.type);
-                                    match_params.parameter_value.push_back(t);
-                                    current_idx = optional_param_child.idx;
-                                }
+                    }
+
+                    if (!a_node_was_found_in_this_iteration) {
+                        auto& optional_regex_children = nodes_[current_idx].optional_param_children;
+                        for (auto &&optional_param_child : optional_regex_children) {
+                            // assume we will find the node here
+                            a_node_was_found_in_this_iteration = true;
+                            // try to match all its regexes
+                            if (!std::regex_match(t, optional_param_child.formula)) {
+                                a_node_was_found_in_this_iteration = false;
                             }
-                            // if none of the optional children match but there are optional
-                            if (!found && !nodes_[current_idx].optional_param_children.empty()){
-                                // we try going through an optional anyway
-                                auto& optional_param_child = nodes_[current_idx].optional_param_children[0];
+                            if (a_node_was_found_in_this_iteration) {
+                                // push parameters
                                 match_params.parameter_name.push_back(optional_param_child.name);
                                 match_params.parameter_trait.push_back(optional_param_child.type);
                                 match_params.parameter_value.push_back(t);
                                 current_idx = optional_param_child.idx;
-                                found = true;
+                                // if this is the last token and the child has a route on the method requested
+                                if (this_is_the_last_token &&
+                                    nodes_[current_idx].rule_index[(int) l] != nullptr) {
+                                    // we return a struct with this node
+                                    return {true, *nodes_[current_idx].rule_index[(int) l], match_params};
+                                } else {
+                                    break;
+                                }
                             }
                         }
+                    }
 
+                    // while none of the optional children match but there is still at least one optional
+                    auto current_node_has_optional_children = !nodes_[current_idx].optional_param_children.empty();
+                    auto optional_child_is_only_hope = this_is_the_last_token && current_node_has_optional_children;
+                    if (!a_node_was_found_in_this_iteration && optional_child_is_only_hope){
+                        auto empty = optional<string>{};
+                        auto& optional_param_child = nodes_[current_idx].optional_param_children[0];
+                        match_params.parameter_name.push_back(optional_param_child.name);
+                        match_params.parameter_trait.push_back(optional_param_child.type);
+                        match_params.parameter_value.push_back(empty);
+                        current_idx = optional_param_child.idx;
+                        auto current_node_has_a_route = nodes_[current_idx].rule_index[(int) l] != nullptr;
+                        if (!this_is_the_last_token && current_node_has_a_route) {
+                            a_node_was_found_in_this_iteration = true;
+                        } else {
+                            if (current_node_has_a_route) {
+                                return {true, *nodes_[current_idx].rule_index[(int) l], match_params};
+                            } else {
+                                a_node_was_found_in_this_iteration = false;
+                                fail_to_find_any_node = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!a_node_was_found_in_this_iteration) {
+                        fail_to_find_any_node = true;
+                        return {false,0,match_params};
                     }
                 }
 
                 // when we run out of tokens
-                if (nodes_[current_idx].rule_index[(int)l] != nullptr ) {
-                     return {true,*nodes_[current_idx].rule_index[(int)l],match_params};
+                // if we failed to find a node or the node to which we are pointing is not valid
+                if (fail_to_find_any_node || nodes_[current_idx].rule_index[(int) l] == nullptr){
+                    return {false,0,match_params};
                 } else {
-                     return {false,0,match_params};
+                    return {true, *nodes_[current_idx].rule_index[(int) l], match_params};
                 }
+
             }
 
             // add a rule's index to the rule trie

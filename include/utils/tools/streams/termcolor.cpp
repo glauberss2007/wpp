@@ -33,7 +33,7 @@
 #include "termcolor/termcolor.hpp"
 
 using namespace termcolor;
-
+using namespace std;
 
 int main(int /*argc*/, char** /*argv*/)
 {
