@@ -1,0 +1,1 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/util_generic_typetraits.dir/tools/programming_paradigms/generic_typetraits.cpp.o  -o util_generic_typetraits 
