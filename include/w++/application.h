@@ -24,12 +24,14 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
+#include <boost/beast/http.hpp> //Beast Version
+
 #include "utils/stl_shortcuts.h"
 #include "utils/container_overloads.h"
 #include "utils/container_utils.h"
 #include "utils/include/simple_server/server_http.hpp"
 #include "utils/include/simple_server/server_https.hpp"
-#include "utils/logging.h"
+// #include "utils/logging.h"
 
 #include "utility.hpp"
 #include "request.h"
@@ -39,6 +41,7 @@
 #include "cache.h"
 #include "encryption.h"
 #include "cookie_parser.h"
+//#include "http_server.h"
 
 namespace wpp {
 
@@ -105,18 +108,22 @@ namespace wpp {
     using boost::optional;
     using namespace std;
 
+    //Aliases for the Boost Beast Server
+    //using request = boost::beast::http::request<boost::beast::http::string_body>;
+    //using response = boost::beast::http::response<boost::beast::http::string_body>;
+    //using route_function = std::function<void(wpp::request&, wpp::response&)>;
+
     using resource_function = std::function<void(wpp::response &, wpp::request &)>;
     using middleware_function = std::function<void(wpp::response &, wpp::request &, std::string parameter, resource_function&)>;
 
     class application {
-        public:
-            friend class request;
+    public:
+        friend class request;
 
-            using self_t = application;
-            using byte = unsigned char;
+        using self_t = application;
+        using byte = unsigned char;
 
-            // shortcuts to create routes
-            template<class FUNC_TYPE = resource_function>
+        template<class FUNC_TYPE = resource_function>
             route_properties &any(std::string rule, FUNC_TYPE func) {
                 return this->route(
                         {method::get, method::delete_, method::head, method::post, method::put, method::options,
@@ -163,6 +170,7 @@ namespace wpp {
                 return this->route({method::trace}, rule, func);
             }
 
+
             // Canonical Form
             // Defining behaviour for 2 parameters (canonical form):
             // void(response&,request&)
@@ -170,8 +178,7 @@ namespace wpp {
                     std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
                     std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
                     std::is_same<typename function_traits<FUNC>::template arg<1>::type, wpp::request &>::value>::type * = nullptr>
-            route_properties &
-            route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
+            route_properties &route2p(std::initializer_list<wpp::method> l, std::string _rule, FUNC func, int parameters_consumed = 0) {
                 // append contextual prefixes
                 string str;
                 bool first = true;
@@ -207,6 +214,8 @@ namespace wpp {
                 return this->any(from, func);
             }
 
+
+
             self_t &on_error(std::function<void(wpp::request, const boost::system::error_code &)> func) {
                 this->on_error_ = func;
                 return *this;
@@ -225,6 +234,7 @@ namespace wpp {
                 return *this;
             }
 
+
             template<typename FUNC, typename std::enable_if<
                     std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
                     std::is_same<typename function_traits<FUNC>::template arg<0>::type, wpp::response &>::value &&
@@ -235,6 +245,7 @@ namespace wpp {
                 this->_error_routes.push_back({s, t});
                 return _routes.back();
             }
+
 
             void error(wpp::status_code s, wpp::response& res, wpp::request& req) {
                 vector<pair<wpp::status_code, route_properties>>::iterator error_route_iter = find_if(
@@ -296,6 +307,7 @@ namespace wpp {
                 return *this;
             }
 
+
             // The route function depends first of all on the number of parameters
             // 2+ parameters
             template<typename FUNC, typename std::enable_if<compile_time_relational<function_traits<FUNC>::arity, 2>::greater_than>::type * = nullptr>
@@ -330,6 +342,7 @@ namespace wpp {
                 };
                 return this->route(l, _rule, canonical_func, parameters_consumed);
             }
+
 
             // when we have query parameters, this parameters are converted according to the type
             template<typename QUERY_PARAM, typename std::enable_if<std::is_same<QUERY_PARAM, int>::value>::type * = nullptr>
@@ -541,6 +554,7 @@ namespace wpp {
                 return this->route(l, _rule, canonical_func, parameters_consumed);
             }
 
+
             // void(response&,parameter)
             template<typename FUNC, typename std::enable_if<
                     std::is_same<typename function_traits<FUNC>::result_type, void>::value &&
@@ -552,13 +566,14 @@ namespace wpp {
                         wpp::response &res,
                         wpp::request &req) -> void {
 
-                    log::debug << "Parameter " << 1 << " receiving query parameter " << parameters_consumed << " ("
+                    std::cout << "Parameter " << 1 << " receiving query parameter " << parameters_consumed << " ("
                                << req.query_parameters.get(parameters_consumed) << ")" << std::endl;
                     func(res, this->convert_query_parameter<typename function_traits<FUNC>::template arg<1>::type>(
                             req.query_parameters.get_optional(parameters_consumed)));
                 };
                 return this->route(l, _rule, canonical_func, parameters_consumed + 1);
             }
+
 
             // response(response&,request&)
             template<typename FUNC, typename std::enable_if<
@@ -654,6 +669,8 @@ namespace wpp {
                 };
                 return this->route(l, _rule, canonical_func, parameters_consumed + 2);
             }
+
+
 
             // defining behaviour for 1 parameter
             // void(response&)
@@ -971,8 +988,7 @@ namespace wpp {
                             req.parent_application = this;
                             auto head_param = convert_query_parameter<typename function_traits_variadic<FUNC>::head3_type>(
                                     req.query_parameters.get_optional(parameters_consumed));
-                            func(res, req, head_param, ts...);
-                        };
+                            func(res, req, head_param, ts...); };
                 parameters_consumed++;
                 return this->route(l, _rule, func_new, parameters_consumed);
             }
@@ -1145,7 +1161,6 @@ namespace wpp {
             }
 
 
-
             std::pair<resource_function, routing_params> get_resource(std::string path, method m) {
                 // Find path- and method-match, and call write_server_response_
                 // create a regex match
@@ -1233,12 +1248,12 @@ namespace wpp {
             }
 
             self_t &lambda(string name, std::function<std::string(const std::string&)> f) {
-                _lambdas[string("@")+name] = data{basic_lambda<std::string>(f)};
+                _lambdas[string("@")+name] = mustache_data{basic_lambda<std::string>(f)};
                 return *this;
             }
 
             self_t &lambda(string name, std::function<std::string(const std::string&,renderer&)> f) {
-                _lambdas[string("@")+name] = data{basic_lambda2<std::string>{f}};
+                _lambdas[string("@")+name] = mustache_data{basic_lambda2<std::string>{f}};
                 return *this;
             }
 
@@ -1301,7 +1316,7 @@ namespace wpp {
                 return *this;
             }
 
-            cache& cache(){
+            cache& get_cache(){
                 return cache_;
             }
 
@@ -1386,306 +1401,312 @@ namespace wpp {
             template<class HttpServer>
             HttpServer* return_server_object();
 
-            self_t &start() {
-                if (!this->secure()){
-                    return start_aux<SimpleWeb::Server<SimpleWeb::HTTP>>();
-                } else {
-                    return start_aux<SimpleWeb::Server<SimpleWeb::HTTPS>>();
+        self_t &start() {
+            if (!this->secure()){
+                return start_aux<SimpleWeb::Server<SimpleWeb::HTTP>>();
+            } else {
+                return start_aux<SimpleWeb::Server<SimpleWeb::HTTPS>>();
+            }
+        }
+
+        template <class HttpServer>
+        self_t &start_aux() {
+            //std::cout << "http://localhost:" << this->_port << "/" << std::endl;
+            std::cout << this->web_root_path() << std::endl;
+            // sort routes
+            utils::sort(_routes, [](route_properties &a, route_properties &b) { return a._uri < b._uri; });
+            // optimize data in a trie
+            setup_trie();
+            std::cout << "ROUTES TRIE: " << std::endl;
+            _route_trie.debug_print();
+            using namespace std::placeholders;
+            // Replace middleware groups by middleware routes
+            for (route_properties &route : _routes) {
+                vector<string> _middleware_routes;
+                for (string &middlename : route._middleware) {
+                    if (this->_middleware_groups.count(middlename)){
+                        _middleware_routes.insert(_middleware_routes.end(),_middleware_groups[middlename].begin(),_middleware_groups[middlename].end());
+                    } else if (_middleware_functions.count(middlename)){
+                        _middleware_routes.push_back(middlename);
+                    }
+                }
+                route._middleware = _middleware_routes;
+            }
+            // Apply middleware to routes
+            for (route_properties &route : _routes) {
+                for (vector<string>::reverse_iterator iter = route._middleware.rbegin(); iter != route._middleware.rend(); iter++) {
+                    string middleware_declaration = *iter;
+                    string middleware_name;
+                    string middleware_parameter;
+                    size_t found = middleware_declaration.rfind(':');
+                    if (found!=std::string::npos){
+                        middleware_parameter = middleware_declaration.substr(found+1);
+                        middleware_name = middleware_declaration.substr(0,found);
+                    } else {
+                        middleware_name = middleware_declaration;
+                    }
+                    std::map<string, middleware_function>::iterator middleware_pair_iter = _middleware_functions.find(middleware_name);
+                    const bool the_middleware_exists = middleware_pair_iter != this->_middleware_functions.end();
+                    if (the_middleware_exists){
+                        route._func = std::bind(middleware_pair_iter->second,_1,_2,middleware_parameter,route._func);
+                    }
                 }
             }
 
-            template <class HttpServer>
-            self_t &start_aux() {
-                //log::info << "http://localhost:" << this->_port << "/" << std::endl;
-                log::info << this->web_root_path() << std::endl;
-                // sort routes
-                utils::sort(_routes, [](route_properties &a, route_properties &b) { return a._uri < b._uri; });
-                // optimize data in a trie
-                setup_trie();
-                log::debug << "ROUTES TRIE: " << std::endl;
-                _route_trie.debug_print();
-                using namespace std::placeholders;
-                // Replace middleware groups by middleware routes
-                for (route_properties &route : _routes) {
-                    vector<string> _middleware_routes;
-                    for (string &middlename : route._middleware) {
-                        if (this->_middleware_groups.count(middlename)){
-                            _middleware_routes.insert(_middleware_routes.end(),_middleware_groups[middlename].begin(),_middleware_groups[middlename].end());
-                        } else if (_middleware_functions.count(middlename)){
-                            _middleware_routes.push_back(middlename);
-                        }
-                    }
-                    route._middleware = _middleware_routes;
-                }
-                // Apply middleware to routes
-                for (route_properties &route : _routes) {
-                    for (vector<string>::reverse_iterator iter = route._middleware.rbegin(); iter != route._middleware.rend(); iter++) {
-                        string middleware_declaration = *iter;
-                        string middleware_name;
-                        string middleware_parameter;
-                        size_t found = middleware_declaration.rfind(':');
-                        if (found!=std::string::npos){
-                            middleware_parameter = middleware_declaration.substr(found+1);
-                            middleware_name = middleware_declaration.substr(0,found);
+            // Apply settings
+            using namespace std;
+
+            unique_ptr<HttpServer> server(return_server_object<HttpServer>());
+
+            server->config.port = this->_port;
+            if (this->_multithreaded) {
+                server->config.thread_pool_size = std::thread::hardware_concurrency();
+            }
+
+            // register all routes by method
+            application &this_application = *this;
+            for (int i = 0; i < number_of_methods(); ++i) {
+                server->default_resource[method_string(
+                        (method) i)] = [&this_application,i](std::shared_ptr<typename HttpServer::Response> response,
+                                                           std::shared_ptr<typename HttpServer::Request> request) {
+
+                    wpp::request req;
+                    wpp::response res;
+                    res.parent_application = &this_application;
+                    this_application.simple_server_to_wpp_request(this_application, request, req);
+
+                    // Look for the route request
+                    std::tuple<bool, unsigned, routing_params> wpp_reply = this_application._route_trie.find(
+                            req.url_, req.method_requested);
+                    req.query_parameters = std::move(std::get<2>(wpp_reply));
+                    const unsigned route_pos = std::get<1>(wpp_reply);
+                    const bool a_valid_route_was_found = std::get<0>(wpp_reply);
+                    //std::cout << method_string((method) i) << " Request on " << req.url_ << std::endl;
+                    // Response to the request
+                    if (a_valid_route_was_found) {
+                        // Process request
+                        std::cout << method_string((method) i) << " Request: " << req.url_ << std::endl;
+                        req.current_route = &this_application._routes[route_pos];
+                        this_application._routes[route_pos]._func(res, req);
+                        // Write response
+                        if (res._file_response && res._file_response->good()){
+                            // filesize
+                            auto length = res._file_response->tellg();
+                            // go to beggining
+                            res._file_response->seekg(0, ios::beg);
+                            SimpleWeb::CaseInsensitiveMultimap header;
+                            header.emplace("Content-Length", to_string(length));
+                            response->write(header);
+                            FileServer<HttpServer>::read_and_send(response, res._file_response);
                         } else {
-                            middleware_name = middleware_declaration;
+                            response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
+
                         }
-                        std::map<string, middleware_function>::iterator middleware_pair_iter = _middleware_functions.find(middleware_name);
-                        const bool the_middleware_exists = middleware_pair_iter != this->_middleware_functions.end();
-                        if (the_middleware_exists){
-                            route._func = std::bind(middleware_pair_iter->second,_1,_2,middleware_parameter,route._func);
-                        }
-                    }
-                }
-
-                // Apply settings
-                using namespace std;
-
-                unique_ptr<HttpServer> server(return_server_object<HttpServer>());
-
-                server->config.port = this->_port;
-                if (this->_multithreaded) {
-                    server->config.thread_pool_size = std::thread::hardware_concurrency();
-                }
-
-                // register all routes by method
-                application &this_application = *this;
-                for (int i = 0; i < number_of_methods(); ++i) {
-                    server->default_resource[method_string(
-                            (method) i)] = [&this_application,i](std::shared_ptr<typename HttpServer::Response> response,
-                                                               std::shared_ptr<typename HttpServer::Request> request) {
-
-                        wpp::request req;
-                        wpp::response res;
-                        res.parent_application = &this_application;
-                        this_application.simple_server_to_wpp_request(this_application, request, req);
-
-                        // Look for the route request
-                        std::tuple<bool, unsigned, routing_params> wpp_reply = this_application._route_trie.find(
-                                req.url_, req.method_requested);
-                        req.query_parameters = std::move(std::get<2>(wpp_reply));
-                        const unsigned route_pos = std::get<1>(wpp_reply);
-                        const bool a_valid_route_was_found = std::get<0>(wpp_reply);
-                        //log::info << method_string((method) i) << " Request on " << req.url_ << std::endl;
-                        // Response to the request
-                        if (a_valid_route_was_found) {
-                            // Process request
-                            log::info << method_string((method) i) << " Request: " << req.url_ << std::endl;
-                            req.current_route = &this_application._routes[route_pos];
-                            this_application._routes[route_pos]._func(res, req);
-                            // Write response
-                            if (res._file_response && res._file_response->good()){
-                                // filesize
-                                auto length = res._file_response->tellg();
-                                // go to beggining
-                                res._file_response->seekg(0, ios::beg);
-                                SimpleWeb::CaseInsensitiveMultimap header;
-                                header.emplace("Content-Length", to_string(length));
-                                response->write(header);
-                                FileServer<HttpServer>::read_and_send(response, res._file_response);
-                            } else {
-                                response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
-
-                            }
-                            log::info << "Response: " << (int) res.code << " on route \""
-                                      << this_application._routes[std::get<1>(wpp_reply)]._name << "\"" << std::endl;
-                        } else if (this_application.default_resource_[i]) {
-                            resource_function& backup_handle = *this_application.default_resource_[i];
-                            route_properties r = route_properties(req.url_,{wpp::method(i)},backup_handle);
-                            req.current_route = &r;
-                            req.current_route->name("backup_route");
-                            backup_handle(res, req);
-                            res.write_cookie_headers();
-                            if (res._file_response && res._file_response->good()){
-                                auto length = res._file_response->tellg();
-                                res._file_response->seekg(0, ios::beg);
-                                SimpleWeb::CaseInsensitiveMultimap header;
-                                header.emplace("Content-Length", to_string(length));
-                                response->write(header);
-                                FileServer<HttpServer>::read_and_send(response, res._file_response);
-                            } else {
-                                response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
-                            }
+                        std::cout << "Response: " << (int) res.code << " on route \""
+                                  << this_application._routes[std::get<1>(wpp_reply)]._name << "\"" << std::endl;
+                    } else if (this_application.default_resource_[i]) {
+                        resource_function& backup_handle = *this_application.default_resource_[i];
+                        route_properties r = route_properties(req.url_,{wpp::method(i)},backup_handle);
+                        req.current_route = &r;
+                        req.current_route->name("backup_route");
+                        backup_handle(res, req);
+                        res.write_cookie_headers();
+                        if (res._file_response && res._file_response->good()){
+                            auto length = res._file_response->tellg();
+                            res._file_response->seekg(0, ios::beg);
+                            SimpleWeb::CaseInsensitiveMultimap header;
+                            header.emplace("Content-Length", to_string(length));
+                            response->write(header);
+                            FileServer<HttpServer>::read_and_send(response, res._file_response);
                         } else {
-                            this_application.error(wpp::status_code::client_error_not_found, res, req);
-                            res.write_cookie_headers();
                             response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
                         }
-                    };
-                }
-
-                // Routes
-                server->on_error = [](std::shared_ptr<typename HttpServer::Request> req, const SimpleWeb::error_code &ec) {
-                    log::debug << ec.message() << std::endl;
+                    } else {
+                        this_application.error(wpp::status_code::client_error_not_found, res, req);
+                        res.write_cookie_headers();
+                        response->write((SimpleWeb::StatusCode) ((int) res.code), res.body, SimpleWeb::CaseInsensitiveMultimap(res.headers.begin(), res.headers.end()));
+                    }
                 };
-
-                server->start();
-                return *this;
             }
 
-            self_t& set_keys(){
-                // Load the necessary cipher
-                EVP_add_cipher(EVP_aes_256_cbc());
-                // set keys
-                gen_params(key, iv);
-                // return itself
-                return *this;
-            }
-
-            string encrypt(string text){
-                // encrypt
-                secure_string protected_text = std::move(text.c_str());
-                secure_string cyphered_text;
-                aes_encrypt(key.data(), iv.data(), protected_text, cyphered_text);
-                // serialize
-                static const char* const lut = "0123456789abcdef";
-                size_t len = cyphered_text.size();
-                std::string output;
-                output.reserve(2 * len);
-                for (size_t i = 0; i < len; ++i)
-                {
-                    const unsigned char c = cyphered_text[i];
-                    output.push_back(lut[c >> 4]);
-                    output.push_back(lut[c & 15]);
-                }
-                return output;
-            }
-
-            string decrypt(string text, string fallback = ""){
-                bool success = true;
-                text = decrypt(text,success);
-                if (success){
-                    return text;
-                } else {
-                    return fallback;
-                }
-            }
-
-            string decrypt(string text, bool& success){
-                success = false;
-                // deserialize
-                secure_string cyphered_text = std::move(text.c_str());
-                static const char* const lut = "0123456789abcdef";
-                size_t len = cyphered_text.length();
-                if (len & 1) {
-                    return string{""};
-                }
-                secure_string unserialized_cyphered_text;
-                unserialized_cyphered_text.reserve(len / 2);
-                for (size_t i = 0; i < len; i += 2)
-                {
-                    char a = cyphered_text[i];
-                    const char* p = std::lower_bound(lut, lut + 16, a);
-                    if (*p != a){
-                        //return string("not a hex digit");
-                        return string("");
-                    }
-
-                    char b = cyphered_text[i + 1];
-                    const char* q = std::lower_bound(lut, lut + 16, b);
-                    if (*q != b) {
-                        //return string("not a hex digit");
-                        return string("");
-                    }
-                    unserialized_cyphered_text.push_back(((p - lut) << 4) | (q - lut));
-                }
-                secure_string returned_text;
-                // decrypt
-                aes_decrypt(key.data(), iv.data(), unserialized_cyphered_text, returned_text, success);
-                return string(returned_text.c_str());
-            }
-
-            string digest(string message){
-                const unsigned char *std_message = (const byte*)message.c_str();
-                size_t message_len = message.size();
-                unsigned char *digest;
-                unsigned int digest_len;
-                digest_message(std_message , message_len, &digest, &digest_len);
-                string session_id = (char*)digest;
-                // serialize to hexadecimal
-                static const char* const lut = "0123456789abcdef";
-                size_t len = session_id.size();
-                std::string digested_message;
-                digested_message.reserve(2 * len);
-                for (size_t i = 0; i < len; ++i)
-                {
-                    const unsigned char c = session_id[i];
-                    digested_message.push_back(lut[c >> 4]);
-                    digested_message.push_back(lut[c & 15]);
-                }
-                return digested_message;
-            }
-
-        private:
-            ///////////////////////////////////////////////////////////////
-            //                         MODEL                             //
-            ///////////////////////////////////////////////////////////////
-            string _assets_root_path = "model/assets";
-
-            ///////////////////////////////////////////////////////////////
-            //                          VIEW                             //
-            ///////////////////////////////////////////////////////////////
-            string _templates_root_path = "view/templates";
-            string _user_agent_parser_root_path = "";
-            basic_data<response::view::string_type> _lambdas;
-            std::unordered_map<std::string,std::function<wpp::json()>> _view_data;
-            unordered_map<std::string, response::pre_processed_view> _pre_processed_views;
-            std::unordered_map<mustache::string_type, response::pre_processed_partial<mustache::string_type>> _pre_processed_partials;
-
-            ///////////////////////////////////////////////////////////////
-            //                      CONTROLLER                           //
-            ///////////////////////////////////////////////////////////////
             // Routes
-            std::vector<route_properties> _routes;
-            std::unordered_map<string, unsigned> _route_by_name;
-            Trie _route_trie;
-            std::vector<pair<wpp::status_code, route_properties>> _error_routes;
-            std::map<std::string, middleware_function> _middleware_functions;
-            std::map<std::string, vector<std::string>> _middleware_groups;
-            // Route groups
-            std::vector<std::vector<std::string>> _group_middleware_context;
-            std::vector<std::string> _group_prefix_context;
-            // Default routes
-            std::array<optional<resource_function>, number_of_methods()> default_resource_;
-            std::function<void(wpp::request, const boost::system::error_code &)> on_error_;
-            // Guard callback (function the return user data in json format so routes can control access)
-            std::function<json(wpp::request&)> _guard_call_back;
+            server->on_error = [](std::shared_ptr<typename HttpServer::Request> req, const SimpleWeb::error_code &ec) {
+                std::cout << ec.message() << std::endl;
+            };
 
-            ///////////////////////////////////////////////////////////////
-            //                          SETTINGS                         //
-            ///////////////////////////////////////////////////////////////
-            // Settings
-            unsigned _port = 8080;
-            bool _multithreaded = true;
-            string _web_root_path = "localhost:8080";
-            // Application utilities
-            size_t _cache_size{100000};
-            std::chrono::duration<double, std::milli> _cache_time{24h};
-            class cache cache_{24h, 10000};
-            // Chryptographic keys
-            vector<byte> key;
-            vector<byte> iv;
-            string _key_file;
-            string _certificate_file;
-            // Cache
-            // Session
-            string session_name_ = {"application_id"};
-            std::chrono::duration<double, std::milli> max_session_inactive_time_ = 5min;
+            server->start();
+            return *this;
+        }
+
+        self_t& set_keys(){
+            // Load the necessary cipher
+            EVP_add_cipher(EVP_aes_256_cbc());
+            // set keys
+            gen_params(key, iv);
+            // return itself
+            return *this;
+        }
+
+        string encrypt(string text){
+            // encrypt
+            secure_string protected_text = std::move(text.c_str());
+            secure_string cyphered_text;
+            aes_encrypt(key.data(), iv.data(), protected_text, cyphered_text);
+            // serialize
+            static const char* const lut = "0123456789abcdef";
+            size_t len = cyphered_text.size();
+            std::string output;
+            output.reserve(2 * len);
+            for (size_t i = 0; i < len; ++i)
+            {
+                const unsigned char c = cyphered_text[i];
+                output.push_back(lut[c >> 4]);
+                output.push_back(lut[c & 15]);
+            }
+            return output;
+        }
+
+        string decrypt(string text, string fallback = ""){
+            bool success = true;
+            text = decrypt(text,success);
+            if (success){
+                return text;
+            } else {
+                return fallback;
+            }
+        }
+
+        string decrypt(string text, bool& success){
+            success = false;
+            // deserialize
+            secure_string cyphered_text = std::move(text.c_str());
+            static const char* const lut = "0123456789abcdef";
+            size_t len = cyphered_text.length();
+            if (len & 1) {
+                return string{""};
+            }
+            secure_string unserialized_cyphered_text;
+            unserialized_cyphered_text.reserve(len / 2);
+            for (size_t i = 0; i < len; i += 2)
+            {
+                char a = cyphered_text[i];
+                const char* p = std::lower_bound(lut, lut + 16, a);
+                if (*p != a){
+                    //return string("not a hex digit");
+                    return string("");
+                }
+
+                char b = cyphered_text[i + 1];
+                const char* q = std::lower_bound(lut, lut + 16, b);
+                if (*q != b) {
+                    //return string("not a hex digit");
+                    return string("");
+                }
+                unserialized_cyphered_text.push_back(((p - lut) << 4) | (q - lut));
+            }
+            secure_string returned_text;
+            // decrypt
+            aes_decrypt(key.data(), iv.data(), unserialized_cyphered_text, returned_text, success);
+            return string(returned_text.c_str());
+        }
+
+        string digest(string message){
+            const unsigned char *std_message = (const byte*)message.c_str();
+            size_t message_len = message.size();
+            unsigned char *digest;
+            unsigned int digest_len;
+            digest_message(std_message , message_len, &digest, &digest_len);
+            string session_id = (char*)digest;
+            // serialize to hexadecimal
+            static const char* const lut = "0123456789abcdef";
+            size_t len = session_id.size();
+            std::string digested_message;
+            digested_message.reserve(2 * len);
+            for (size_t i = 0; i < len; ++i)
+            {
+                const unsigned char c = session_id[i];
+                digested_message.push_back(lut[c >> 4]);
+                digested_message.push_back(lut[c & 15]);
+            }
+            return digested_message;
+        }
+
+    private:
+        ///////////////////////////////////////////////////////////////
+        //                         MODEL                             //
+        ///////////////////////////////////////////////////////////////
+        string _assets_root_path = "model/assets";
+
+        ///////////////////////////////////////////////////////////////
+        //                          VIEW                             //
+        ///////////////////////////////////////////////////////////////
+        string _templates_root_path = "view/templates";
+        string _user_agent_parser_root_path = "";
+        basic_data<response::view::string_type> _lambdas;
+        std::unordered_map<std::string,std::function<wpp::json()>> _view_data;
+        unordered_map<std::string, response::pre_processed_view> _pre_processed_views;
+        std::unordered_map<mustache::string_type, response::pre_processed_partial<mustache::string_type>>
+                _pre_processed_partials;
+
+        ///////////////////////////////////////////////////////////////
+        //                      CONTROLLER                           //
+        ///////////////////////////////////////////////////////////////
+
+        // Routes
+        //Vector for newest routes
+        //std::vector<std::pair<wpp::status_code , route_function>> _routes_Error;
+        //std::vector<std::pair<std::regex, route_function>> _routes;
+        std::vector<route_properties> _routes;
+        std::unordered_map<string, unsigned> _route_by_name;
+        Trie _route_trie;
+        std::vector<pair<wpp::status_code, route_properties>> _error_routes;
+        std::map<std::string, middleware_function> _middleware_functions;
+        std::map<std::string, vector<std::string>> _middleware_groups;
+        // Route groups
+        std::vector<std::vector<std::string>> _group_middleware_context;
+        std::vector<std::string> _group_prefix_context;
+        // Default routes
+        std::array<optional<resource_function>, number_of_methods()> default_resource_;
+        std::function<void(wpp::request, const boost::system::error_code &)> on_error_;
+        // Guard callback (function the return user data in json format so routes can control access)
+        std::function<json(wpp::request&)> _guard_call_back;
+
+        ///////////////////////////////////////////////////////////////
+        //                          SETTINGS                         //
+        ///////////////////////////////////////////////////////////////
+        // Settings
+        unsigned _port = 8080;
+        bool _multithreaded = true;
+        string _web_root_path = "localhost:8080";
+        // Application utilities
+        size_t _cache_size{100000};
+        std::chrono::duration<double, std::milli> _cache_time{24h};
+        class cache cache_{24h, 10000};
+        // Chryptographic keys
+        vector<byte> key;
+        vector<byte> iv;
+        string _key_file;
+        string _certificate_file;
+        // Cache
+        // Session
+        string session_name_ = {"application_id"};
+        std::chrono::duration<double, std::milli> max_session_inactive_time_ = 5min;
+};
+
+template <>
+SimpleWeb::Server<SimpleWeb::HTTP>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTP>>() {
+    return new SimpleWeb::Server<SimpleWeb::HTTP>();
+}
+
+template <>
+SimpleWeb::Server<SimpleWeb::HTTPS>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTPS>>() {
+    cout << "Creating a secure server" << endl;
+    return new SimpleWeb::Server<SimpleWeb::HTTPS>(this->_certificate_file, this->_key_file);
+}
+
+
     };
 
-    template <>
-    SimpleWeb::Server<SimpleWeb::HTTP>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTP>>() {
-        return new SimpleWeb::Server<SimpleWeb::HTTP>();
-    }
-
-    template <>
-    SimpleWeb::Server<SimpleWeb::HTTPS>* application::return_server_object<SimpleWeb::Server<SimpleWeb::HTTPS>>() {
-        cout << "Creating a secure server" << endl;
-        return new SimpleWeb::Server<SimpleWeb::HTTPS>(this->_certificate_file, this->_key_file);
-    }
-
-
-}
 
 // TODO: Implement different response types
 // response.redirect().route("routename")
@@ -1812,6 +1833,5 @@ namespace wpp {
 
 // TODO: Implement database connection and ORM on cmake
 // make script/program to read the DB and create C++ objects to access data
-
 
 #endif //WPP_APPLICATION_H

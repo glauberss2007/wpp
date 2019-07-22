@@ -34,7 +34,6 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-
 namespace kainjow {
     namespace mustache {
 
@@ -1292,7 +1291,7 @@ namespace kainjow {
         };
 
         using mustache = basic_mustache<std::string>;
-        using data = basic_data<mustache::string_type>;
+        using mustache_data = basic_data<mustache::string_type>;
         using object = basic_object<mustache::string_type>;
         using list = basic_list<mustache::string_type>;
         using partial = basic_partial<mustache::string_type>;

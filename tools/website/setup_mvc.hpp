@@ -5,12 +5,12 @@
 #ifndef WPP_MVC_H
 #define WPP_MVC_H
 
-#include "utils/logging.h"
+// #include "utils/logging.h"
 
 // model
 
 // controller
-#include "controller/middlewares/middlewares.h"
+//#include "controller/middlewares/middlewares.h"
 #include "controller/routes/web_routes.h"
 #include "controller/routes/error_routes.h"
 // view
@@ -35,7 +35,7 @@ void setup_mvc(application &app) {
     register_view_lambdas(app);
     register_view_data(app);
     // Controller
-    register_middlewares(app);
+    //register_middlewares(app);
     register_web_routes(app);
     register_error_routes(app);
 }

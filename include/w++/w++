@@ -14,14 +14,20 @@ namespace wpp {
     using json = nlohmann::json;
 }
 
+// Declaration
 // Application
 #include "application.h"
 
+// Definição
+//#include "http_server.hpp"
+
+/*
 // Guards keep user data to protect the routes
 #include "guard.h"
-
+*/
 // Functions with cycles
 #include "response.hpp"
 #include "request.hpp"
+
 
 #endif //WPP_W_H

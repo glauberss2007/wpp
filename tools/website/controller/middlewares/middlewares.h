@@ -47,22 +47,22 @@ void register_middlewares(wpp::application &app) {
         string fingerprint = app.digest(boost::algorithm::join(route_strings, "|"));
 
         bool too_many_attempts = false;
-        if (app.cache().has(fingerprint + ":lockout")) {
+        if (app.get_cache().has(fingerprint + ":lockout")) {
             too_many_attempts = true;
         }
         int attempts = 0;
         if (!too_many_attempts){
-            attempts = app.cache().get(fingerprint, 0);
+            attempts = app.get_cache().get(fingerprint, 0);
             if (attempts >= max_attempts){
-                app.cache().add(fingerprint+":lockout", std::time(nullptr) + (decay_minutes * 60), std::chrono::minutes(decay_minutes));
-                app.cache().forget(fingerprint);
+                app.get_cache().add(fingerprint+":lockout", std::time(nullptr) + (decay_minutes * 60), std::chrono::minutes(decay_minutes));
+                app.get_cache().forget(fingerprint);
                 too_many_attempts = true;
             }
         }
         int available_in = 0;
         if (too_many_attempts) {
             app.error(status_code::client_error_too_many_requests,res,req);
-            available_in = (app.cache().get(fingerprint+":lockout",0)).get<long>() - std::time(nullptr);
+            available_in = (app.get_cache().get(fingerprint+":lockout",0)).get<long>() - std::time(nullptr);
             // add headers
             res.add_header("X-RateLimit-Limit",to_string(max_attempts));
             res.add_header("X-RateLimit-Remaining",to_string(max_attempts-attempts));
@@ -74,8 +74,8 @@ void register_middlewares(wpp::application &app) {
         }
 
         // hit
-        app.cache().add(fingerprint, 0, std::chrono::minutes(decay_minutes));
-        app.cache().increment(fingerprint);
+        app.get_cache().add(fingerprint, 0, std::chrono::minutes(decay_minutes));
+        app.get_cache().increment(fingerprint);
 
         next(res,req);
 
@@ -90,12 +90,12 @@ void register_middlewares(wpp::application &app) {
             if (disabled_encryption.count(cookie.first)){
                 continue;
             }
-            log::debug << "Cookie " << cookie.first << ":" << cookie.second;
+            std::cout << "Cookie " << cookie.first << ":" << cookie.second;
             cookie.second = app.decrypt(cookie.second,success);
             if (success){
-                log::debug << " decrypted to " << cookie.second << endl;
+                std::cout << " decrypted to " << cookie.second << endl;
             } else {
-                log::debug << " couldn't be decrypted" << endl;
+                std::cout << " couldn't be decrypted" << endl;
                 res.cookie(cookie.first,"",-1);
             }
         }
@@ -106,24 +106,24 @@ void register_middlewares(wpp::application &app) {
             if (disabled_encryption.count(cookie.first)){
                 continue;
             }
-            log::debug << "Cookie " << cookie.first << ":" << cookie.second << " encrypted to ";
+            std::cout << "Cookie " << cookie.first << ":" << cookie.second << " encrypted to ";
             get<0>(cookie.second) = app.encrypt(get<0>(cookie.second));
-            log::debug << get<0>(cookie.second) << endl;
+            std::cout << get<0>(cookie.second) << endl;
         }
     });
 
     app.middleware("add_queued_cookies_to_response", [&app](wpp::response &res, wpp::request &req, wpp::resource_function& next) {
         next(res,req);
-        log::debug << "Writing " << res.cookie_jar.size() << " queued cookies (";
+        std::cout << "Writing " << res.cookie_jar.size() << " queued cookies (";
         int printed = 0;
         for (auto i = res.cookie_jar.begin(); i != res.cookie_jar.end(); ++i) {
-            log::debug << i->first;
+            std::cout << i->first;
             if (printed != res.cookie_jar.size()-1){
-                log::debug << ",";
+                std::cout << ",";
                 printed++;
             }
         }
-        log::debug << ")" << endl;
+        std::cout << ")" << endl;
         res.write_cookie_headers();
     });
 
@@ -133,9 +133,9 @@ void register_middlewares(wpp::application &app) {
         string session_id = req.get_cookie(app.session_name());
         const bool we_found_a_decrypted_session = !session_id.empty();
         if (we_found_a_decrypted_session) {
-            const bool the_session_is_in_cache = app.cache().has("session_" + session_id);
+            const bool the_session_is_in_cache = app.get_cache().has("session_" + session_id);
             if (the_session_is_in_cache) {
-                json session = app.cache().get("session_" + session_id);
+                json session = app.get_cache().get("session_" + session_id);
                 const bool client_is_the_same_as_last_one = session["ip_address"].get<string>() == req.remote_endpoint_address &&
                                                             session["user_agent"].get<string>() == req.user_agent_header();
                 if (client_is_the_same_as_last_one) {
@@ -146,7 +146,7 @@ void register_middlewares(wpp::application &app) {
         }
         if (req.session_data.empty()) {
             req.session_regenerate(res);
-            log::debug << "Generated a new session " << req.session_data["id"] << endl;
+            std::cout << "Generated a new session " << req.session_data["id"] << endl;
         }
 
         next(res,req);
@@ -163,10 +163,10 @@ void register_middlewares(wpp::application &app) {
             // find id
             const string serialized_session_id = req.session_data["id"];
             // send/add cookie
-            log::debug << "Adding cookie session " << app.session_name() << " = " << serialized_session_id << endl;
+            std::cout << "Adding cookie session " << app.session_name() << " = " << serialized_session_id << endl;
             res.cookie(app.session_name(),serialized_session_id,session_minutes);
             // update cache
-            app.cache().put("session_"+serialized_session_id,req.session_data,app.max_session_inactive_time());
+            app.get_cache().put("session_"+serialized_session_id,req.session_data,app.max_session_inactive_time());
         }
     });
 

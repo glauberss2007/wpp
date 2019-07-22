@@ -44,7 +44,7 @@ namespace wpp {
                 : _base_cache(time_to_live, capacity), _default_expiration_time(time_to_live) {
         }
 
-        bool has(string key){
+        bool has(std::string key){
             if (_base_cache.contains(key)){
                 cache_data& data = _base_cache[key];
                 auto elapsed = (clock::now() - data._insertion_time);
@@ -59,7 +59,7 @@ namespace wpp {
             return false;
         }
 
-        wpp::json get(string key, json default_ = ""){
+        wpp::json get(std::string key, json default_ = ""){
             if (this->has(key)){
                 return _base_cache[key]._value;
             } else {
@@ -67,45 +67,45 @@ namespace wpp {
             }
         }
 
-        cache& put(string key, json value){
+        cache& put(std::string key, json value){
             _base_cache.emplace(key,cache_data{clock::now(),_default_expiration_time,value});
             return *this;
         }
 
-        cache& put(string key, json value, duration expiration_time){
+        cache& put(std::string key, json value, duration expiration_time){
             _base_cache.emplace(key,cache_data{clock::now(),expiration_time,value});
             return *this;
         }
 
-        cache& put(initializer_list<pair<string,json>> l){
+        cache& put(std::initializer_list<std::pair<std::string,json>> l){
             for (auto &&item  : l) {
                 _base_cache.emplace(item.first,cache_data{clock::now(),_default_expiration_time,item.second});
             }
             return *this;
         }
 
-        cache& put(initializer_list<pair<string,json>> l, duration expiration_time){
+        cache& put(std::initializer_list<std::pair<std::string,json>> l, duration expiration_time){
             for (auto &&item  : l) {
                 _base_cache.emplace(item.first,cache_data{clock::now(),expiration_time,item.second});
             }
             return *this;
         }
 
-        cache& add(string key, json value){
+        cache& add(std::string key, json value){
             if (!this->has(key)) {
                 this->put(key,value);
             }
             return *this;
         }
 
-        cache& add(string key, json value, duration expiration_time){
+        cache& add(std::string key, json value, duration expiration_time){
             if (!this->has(key)) {
                 this->put(key,value,expiration_time);
             }
             return *this;
         }
 
-        cache& increment(string key, int amount = 1){
+        cache& increment(std::string key, int amount = 1){
             if (this->has(key)){
                 cache_data& data = _base_cache[key];
                 if (data._value.is_number()){
@@ -114,7 +114,7 @@ namespace wpp {
             }
             return *this;
         }
-        cache& decrement(string key, int amount = 1){
+        cache& decrement(std::string key, int amount = 1){
             if (this->has(key)){
                 cache_data& data = _base_cache[key];
                 if (data._value.is_number()){
@@ -124,14 +124,14 @@ namespace wpp {
             return *this;
         }
         template <typename FUNC>
-        json remember(string key, FUNC func){
+        json remember(std::string key, FUNC func){
             if (!this->has(key)){
                 this->put(key,func());
             }
             return _base_cache[key]._value;
         }
 
-        json pull(string key){
+        json pull(std::string key){
             if (this->has(key)){
                 auto temp = _base_cache[key]._value;
                 this->forget(key);
@@ -141,7 +141,7 @@ namespace wpp {
             }
         }
 
-        bool forget(string key){
+        bool forget(std::string key){
             if (this->has(key)){
                 _base_cache.erase(key);
                 return true;
@@ -150,7 +150,7 @@ namespace wpp {
             }
         }
 
-        bool erase(string key){
+        bool erase(std::string key){
             if (this->has(key)){
                 _base_cache.erase(key);
                 return true;

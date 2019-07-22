@@ -130,6 +130,7 @@ namespace wpp {
         }
     }
 
+
     request& request::session_regenerate(response& res) {
         // generate session id
         std::string unix_timestamp = to_string(std::time(nullptr));
@@ -160,12 +161,13 @@ namespace wpp {
         this->session_data["port"] = to_string(this->remote_endpoint_port);
         this->session_data["last_activity"] = to_string(std::time(nullptr));
 
-        parent_application->cache().put("session_"+serialized_session_id,session_data, parent_application->max_session_inactive_time_);
+        parent_application->get_cache().put("session_"+serialized_session_id,session_data, parent_application->max_session_inactive_time_);
 
         this->session_data = std::move(session_data);
         
         return *this;
     }
+
 
     std::string request::url() const {
         int slashes = 0;

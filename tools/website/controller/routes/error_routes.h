@@ -84,7 +84,7 @@ void register_error_routes(application &app) {
             //    Uncomment the following line to enable Cache-Control
             //header.emplace("Cache-Control", "max-age=86400");
 
-            #ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
             //    Uncomment the following lines to enable ETag
                                 //    {
                                 //      ifstream ifs(path.string(), ifstream::in | ios::binary);
@@ -102,7 +102,7 @@ void register_error_routes(application &app) {
                                 //      else
                                 //        throw invalid_argument("could not read file");
                                 //    }
-            #endif
+#endif
             // open file to stream
             res._file_response = make_shared<ifstream>();
             res._file_response->open(path.string(), ifstream::in | ios::binary | ios::ate);

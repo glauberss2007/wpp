@@ -104,7 +104,7 @@ namespace wpp {
         EVP_MD_CTX_destroy(mdctx);
     }
 
-    void gen_params(vector<byte>& key, vector<byte>& iv, unsigned int KEY_SIZE = 32, unsigned int BLOCK_SIZE = 16)
+    void gen_params(std::vector<byte>& key, std::vector<byte>& iv, unsigned int KEY_SIZE = 32, unsigned int BLOCK_SIZE = 16)
     {
         key.resize(KEY_SIZE);
         iv.resize(BLOCK_SIZE);

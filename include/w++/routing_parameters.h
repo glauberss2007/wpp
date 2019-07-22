@@ -6,7 +6,7 @@
 #define WPP_ROUTING_PARAMETERS_H
 
 #include "enums.h"
-#include "utils/logging.h"
+// #include "utils/logging.h"
 #include <string>
 #include <vector>
 #include <boost/optional.hpp>
@@ -15,6 +15,7 @@ namespace wpp{
     using namespace std;
     using namespace utils;
     using boost::optional;
+    // using namespace logging;
 
     struct routing_params {
         std::vector<std::string> parameter_name;
@@ -65,15 +66,15 @@ namespace wpp{
         }
 
         void debug_print() const {
-            log::info << "routing_params" << std::endl;
+            std::cout << "routing_params" << std::endl;
             for (int i = 0; i < parameter_name.size(); ++i) {
                 if (parameter_value[i]){
-                    log::info << parameter_name[i] << ": " << *parameter_value[i] <<  ", ";
+                    std::cout << parameter_name[i] << ": " << *parameter_value[i] <<  ", ";
                 } else {
-                    log::info << parameter_name[i] << ": (empty), ";
+                    std::cout << parameter_name[i] << ": (empty), ";
                 }
             }
-            log::info << std::endl;
+            std::cout << std::endl;
         }
 
         template<typename T>

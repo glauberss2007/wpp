@@ -7,7 +7,7 @@
 
 #include <boost/tokenizer.hpp>
 
-#include "utils/logging.h"
+// #include "utils/logging.h"
 
 #include "enums.h"
 #include "response.h"
@@ -115,7 +115,7 @@ namespace wpp {
                     data++;
                     where(*item.begin(),*data);
                 } else {
-                    log::error << "The initializer list in route::where did not have the proper format" << std::endl;
+                    std::cerr << "The initializer list in route::where did not have the proper format" << std::endl;
                 }
             }
             return *this;

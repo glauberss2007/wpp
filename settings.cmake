@@ -12,3 +12,6 @@ set(ENABLE_LOGGING 1)
 set(WPP_ENABLE_SSL 1)
 
 set(_MSC_VERSION 0)
+
+find_package(Threads)
+link_libraries(${CMAKE_THREAD_LIBS_INIT})

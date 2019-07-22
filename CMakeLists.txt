@@ -3,11 +3,7 @@
 #######################################################
 cmake_minimum_required(VERSION 3.6)
 project(wpp)
-if (${APPLE})
-    set(CMAKE_CXX_STANDARD 14)
-else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-endif ()
+set(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 add_compile_options(-Wno-deprecated-declarations -Wno-trigraphs -Wno-deprecated-register -Wno-parentheses)
 
@@ -41,7 +37,32 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/components/uap-cpp/)
 ### SOURCES                                         ###
 #######################################################
 # wpp sources
-#file(GLOB WPP_SRC_FILES lib/w++/*.cpp)
+set(WPP_SRC_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/application.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/cache.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/cookie_parser.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/crypto.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/database.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/detect_ssl.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/encryption.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/enums.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/guard.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/http_server.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/methods.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/query_string.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/regex_order.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/request.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/request.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/response.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/response.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/route_properties.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/routing_parameters.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/server_certificate.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/ssl_stream.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/trie.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/utility.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/w++
+        )
 
 #######################################################
 ### LIBRARIES                                       ###

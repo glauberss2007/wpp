@@ -17,7 +17,6 @@ namespace wpp {
             trace,
     };
 
-
     inline std::string method_string(method method_) {
         switch (method_) {
             case method::delete_:

@@ -12,6 +12,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
+
 #include "utility.hpp"
 #include "methods.h"
 #include "environment.h"
@@ -19,12 +20,17 @@
 #include "routing_parameters.h"
 #include "encryption.h"
 #include "UaParser.h"
+#include "application.h"
+
 
 namespace wpp {
     struct route_properties;
     class application;
     class response;
     class guard;
+
+    using reque = boost::beast::http::request<boost::beast::http::string_body>;
+    using respo = boost::beast::http::response<boost::beast::http::string_body>;
 
     struct request {
         friend class application;

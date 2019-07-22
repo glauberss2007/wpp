@@ -35,7 +35,7 @@ message("${Boost_LIBRARIES}")
 ###                 SQLITE LIBRARIES                ###
 #######################################################
 # brew install boost
-find_package(SQLITE3 REQUIRED)
+find_package(SQLITE3)
 include_directories(${SQLITE3_INCLUDE_DIRS})
 set(ALL_LIBRARIES ${ALL_LIBRARIES} ${SQLITE3_LIBRARIES})
 message("${SQLITE3_LIBRARIES}")

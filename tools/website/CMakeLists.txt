@@ -21,7 +21,8 @@ configure_file(environment.h.in environment.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp ${WPP_SRC_FILES})
 
 add_executable(w++ ${SOURCE_FILES})
-target_link_libraries(w++ ${ALL_LIBRARIES})
+target_link_libraries(w++ ${ALL_LIBRARIES} ${Boost_LIBRARIES})
+message(STATUS ${SOURCE_FILES})

@@ -110,7 +110,7 @@ namespace wpp {
                 using string_type = std::string;
 
                 string _filename;
-                wpp::data _data;
+                wpp::mustache_data _data;
                 string& _templates_root_path;
                 basic_data<string_type>& _lambdas;
                 std::unordered_map<std::string,std::function<wpp::json()>>& _view_data;
@@ -135,12 +135,12 @@ namespace wpp {
                     json_to_mustache(json_data,_data);
                 };
 
-                static void json_to_mustache(wpp::json& j, wpp::data& d){
+                static void json_to_mustache(wpp::json& j, wpp::mustache_data& d){
                     if (j.is_array()){
-                        d = wpp::data{data::type::list};
+                        d = wpp::mustache_data{mustache_data::type::list};
                         for (json::iterator it = j.begin(); it != j.end(); ++it) {
                             if (it->is_array() || it->is_object()){
-                                wpp::data d2;
+                                wpp::mustache_data d2;
                                 json_to_mustache(*it,d2);
                                 d.push_back(std::move(d2));
                             } else if (it->is_string()) {
@@ -148,16 +148,16 @@ namespace wpp {
                             } else if (it->is_number()) {
                                 d.push_back(it->dump());
                             } else if (it->is_boolean()){
-                                d.push_back(it->get<bool>() ? data::type::bool_true : data::type::bool_false);
+                                d.push_back(it->get<bool>() ? mustache_data::type::bool_true : mustache_data::type::bool_false);
                             } else if (it->is_null()) {
-                                d.push_back(data::type::invalid);
+                                d.push_back(mustache_data::type::invalid);
                             }
                         }
                     } else if (j.is_object()) {
-                        d = wpp::data{data::type::object};
+                        d = wpp::mustache_data{mustache_data::type::object};
                         for (json::iterator it = j.begin(); it != j.end(); ++it) {
                             if (it.value().is_array() || it.value().is_object()){
-                                wpp::data d2;
+                                wpp::mustache_data d2;
                                 json_to_mustache(*it,d2);
                                 d.set(it.key(),std::move(d2));
                             } else if (it.value().is_string()) {
@@ -165,9 +165,9 @@ namespace wpp {
                             } else if (it.value().is_number()) {
                                 d.set(it.key(),it.value().dump());
                             } else if (it.value().is_boolean()){
-                                d.set(it.key(),it.value().get<bool>() ? data::type::bool_true : data::type::bool_false);
+                                d.set(it.key(),it.value().get<bool>() ? mustache_data::type::bool_true : mustache_data::type::bool_false);
                             } else if (it.value().is_null()) {
-                                d.set(it.key(),data::type::invalid);
+                                d.set(it.key(),mustache_data::type::invalid);
                             }
                         }
                     } else if (j.is_string()) {
@@ -175,7 +175,7 @@ namespace wpp {
                     } else if (j.is_number()) {
                         d = j.dump();
                     } else if (j.is_boolean()){
-                        d = j.get<bool>() ? data::type::bool_true : data::type::bool_false;
+                        d = j.get<bool>() ? mustache_data::type::bool_true : mustache_data::type::bool_false;
                     } else if (j.is_null()){
                         return;
                     }

@@ -9,7 +9,7 @@
 
 void config(application &app) {
     // Debug
-    utils::default_log_level::default_level = utils::log_level::debug;
+    // logging::default_log_level::default_level = logging::log_level::debug;
 
     // HTTPS
     // app.secure(string(environment::https_keys_root_path) + "server.crt", string(environment::https_keys_root_path) + "server.key");

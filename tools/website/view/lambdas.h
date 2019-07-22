@@ -89,7 +89,7 @@ void register_view_lambdas(application &app) {
         auto element = ri.ctx->ctx.get("_csrfmiddlewaretoken");
         if (element == nullptr){
             string csrf_token_string = csrf_token(app);
-            data csrf_token_data{data::type::object};
+            mustache_data csrf_token_data{mustache_data::type::object};
             csrf_token_data.set("_csrfmiddlewaretoken",csrf_token_string);
             ri.ctx->ctx.push_copy(&csrf_token_data);
             return string("<input type=\"hidden\" name=\"_csrfmiddlewaretoken\" value=\"")+csrf_token_string+"\" />";
@@ -104,7 +104,7 @@ void register_view_lambdas(application &app) {
         auto element = ri.ctx->ctx.get("_csrfmiddlewaretoken");
         if (element == nullptr){
             string csrf_token_string = csrf_token(app);
-            data csrf_token_data{data::type::object};
+            mustache_data csrf_token_data{mustache_data::type::object};
             csrf_token_data.set("_csrfmiddlewaretoken",csrf_token_string);
             ri.ctx->ctx.push_copy(&csrf_token_data);
             return csrf_token_string;
@@ -121,12 +121,12 @@ void register_view_lambdas(application &app) {
         renderer_internal &ri = static_cast<renderer_internal &>(r);
         if (parameters.size() == 2 && parameters[0].is_string() && parameters[1].is_string()) {
             // if there is only text string + one string parameter, try to loop the variable
-            const data *var = ri.ctx->ctx.get(parameters[1].get<string>());
+            const mustache_data *var = ri.ctx->ctx.get(parameters[1].get<string>());
             if (var && var->is_non_empty_list()) {
                 string result;
                 for (int i = 0; i < var->list_value().size(); ++i) {
-                    const data& item = (var->list_value())[i];
-                    data loopdata{data::type::object};
+                    const mustache_data& item = (var->list_value())[i];
+                    mustache_data loopdata{mustache_data::type::object};
                     loopdata.set("is_first",(i==0 ? true : false));
                     loopdata.set("is_last",(i==var->list_value().size()-1 ? true : false));
                     loopdata.set("loop_index",to_string(i));
@@ -143,18 +143,18 @@ void register_view_lambdas(application &app) {
             }
         } else if (parameters.size() == 3  && parameters[0].is_string() && parameters[1].is_string() && parameters[2].is_number_integer()) {
             // if there is text + string parameter + int parameter, loop in chunks
-            const data *var = ri.ctx->ctx.get(parameters[1].get<string>());
+            const mustache_data *var = ri.ctx->ctx.get(parameters[1].get<string>());
             if (var && var->is_non_empty_list()) {
                 int chunk_size = parameters[2].get<int>();
                 int n_of_chunks = var->size()/chunk_size;
                 int rest_of_chunks = var->size()%chunk_size;
                 string result;
                 for (int i = 0; i < n_of_chunks; ++i) {
-                    data chunk_list{data::type::list};
+                    mustache_data chunk_list{mustache_data::type::list};
                     for (int j = 0; j < chunk_size; ++j) {
                         chunk_list.push_back(var->list_value()[i * chunk_size + j]);
                     }
-                    data chunk{data::type::object};
+                    mustache_data chunk{mustache_data::type::object};
                     chunk.set("chunk",chunk_list);
                     if (i == 0){
                         chunk.set("is_first",true);
@@ -175,11 +175,11 @@ void register_view_lambdas(application &app) {
                     ri.ctx->ctx.pop();
                 }
                 if (rest_of_chunks != 0) {
-                    data chunk_list{data::type::list};
+                    mustache_data chunk_list{mustache_data::type::list};
                     for (int j = 0; j < rest_of_chunks; ++j) {
                         chunk_list.push_back(var->list_value()[var->size() - rest_of_chunks + j]);
                     }
-                    data chunk{data::type::object};
+                    mustache_data chunk{mustache_data::type::object};
                     chunk.set("chunk",chunk_list);
                     if (n_of_chunks == 0){
                         chunk.set("is_first",true);

@@ -18,7 +18,7 @@
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-#include "utils/logging.h"
+// #include "utils/logging.h"
 #include "methods.h"
 #include "route_properties.h"
 
@@ -224,7 +224,7 @@ namespace wpp {
                                 current_idx = nodes_[current_idx].optional_param_children.back().idx;
                             }
                         } else {
-                            log::critical << "Could not find the parameter " << route._uri_members[i] << std::endl;
+                            std::cerr << "Could not find the parameter " << route._uri_members[i] << std::endl;
                             return;
                         }
                     }
@@ -239,17 +239,17 @@ namespace wpp {
         private:
             void debug_node_print(Node *n, int level) {
                 for (auto &&child : n->children) {
-                    log::debug << std::string(level, ' ') << "/" << child.first << std::endl;
+                    std::cout << std::string(level, ' ') << "/" << child.first << std::endl;
                     debug_node_print(&nodes_[child.second], level + child.first.length() + 1);
                 }
                 for (auto &&child : n->param_children) {
                     std::string typestr = paramtype_to_string(child.type);
-                    log::debug << std::string(level, ' ') << "/" << "{" << typestr << ": " << child.name << "}" << std::endl;
+                    std::cout << std::string(level, ' ') << "/" << "{" << typestr << ": " << child.name << "}" << std::endl;
                     debug_node_print(&nodes_[child.idx], child.name.length() + typestr.length() + level + 5);
                 }
                 for (auto &&child : n->optional_param_children) {
                     std::string typestr = "Optional " + paramtype_to_string(child.type);
-                    log::debug << std::string(level, ' ') << "/" << "{" << typestr << ": " << child.name << "}" << std::endl;
+                    std::cout << std::string(level, ' ') << "/" << "{" << typestr << ": " << child.name << "}" << std::endl;
                     debug_node_print(&nodes_[child.idx], child.name.length() + typestr.length() + level + 5);
                 }
             }
@@ -259,7 +259,7 @@ namespace wpp {
             void debug_print() {
                 for (int i = 0; i < number_of_methods(); ++i) {
                     if (head()->rule_index[i] != nullptr){
-                        log::debug << "/" << std::endl;
+                        std::cout << "/" << std::endl;
                         break;
                     }
                 }

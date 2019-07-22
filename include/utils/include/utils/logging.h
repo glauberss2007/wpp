@@ -8,16 +8,90 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include "utils/pretty_table/pretty_table.h"
 
-namespace utils {
+#include "../termcolor/termcolor.hpp"
+
+namespace logging {
+
+    using namespace termcolor;
+
+    enum class color {none, red, green, yellow, blue, magenta, cyan, grey, black};
 
     enum log_level { debug = 0, info, warning, error, critical };
 
     ///////////////////////////////////////////////////////////////
-    //       Workaround to have static members in the header     //
+    //                  From color enum to stream                //
     ///////////////////////////////////////////////////////////////
-
+    inline std::ostream &
+        stream_text_properties(std::ostream &stream, bool bold, bool underline, color color_, color background_) {
+            if (bold) {
+                stream << termcolor::bold;
+            }
+            if (underline) {
+                stream << termcolor::underline;
+            }
+            if (color_ != color::none) {
+                switch (color_) {
+                    case (color::blue):
+                        stream << termcolor::blue;
+                        break;
+                    case (color::cyan):
+                        stream << termcolor::cyan;
+                        break;
+                    case (color::green):
+                        stream << termcolor::green;
+                        break;
+                    case (color::black):
+                        stream << termcolor::grey;
+                        break;
+                    case (color::magenta):
+                        stream << termcolor::magenta;
+                        break;
+                    case (color::red):
+                        stream << termcolor::red;
+                        break;
+                    case (color::grey):
+                        stream << termcolor::white;
+                        break;
+                    case (color::yellow):
+                        stream << termcolor::yellow;
+                        break;
+                    case (color::none):
+                        break;
+                }
+            }
+            if (background_ != color::none) {
+                switch (background_) {
+                    case (color::blue):
+                        stream << termcolor::on_blue;
+                        break;
+                    case (color::cyan):
+                        stream << termcolor::on_cyan;
+                        break;
+                    case (color::green):
+                        stream << termcolor::on_green;
+                        break;
+                    case (color::black):
+                        stream << termcolor::on_grey;
+                        break;
+                    case (color::magenta):
+                        stream << termcolor::on_magenta;
+                        break;
+                    case (color::red):
+                        stream << termcolor::on_red;
+                        break;
+                    case (color::grey):
+                        stream << termcolor::on_white;
+                        break;
+                    case (color::yellow):
+                        stream << termcolor::on_yellow;
+                        break;
+                    case (color::none):
+                        break;
+                }
+            }
+            return stream;
+        }
     ///////////////////////////////////////////////////////////////
     //                 STATIC DEFAULT LOG LEVEL                  //
     ///////////////////////////////////////////////////////////////
@@ -103,7 +177,7 @@ namespace utils {
 
                     int sync() {
                         if (enable_logging::enable) {
-                            if (level_ >= default_log_level::default_level) {
+                            if ((int) level_ >= (int) default_log_level::default_level) {
                                 stream_text_properties(std::cout,bold_,underline_,text_color_,background_color_);
                                 if (time_){
                                     std::cout << "(" << timestamp() << ") ";
@@ -159,6 +233,7 @@ namespace utils {
         static T debug;
         static T log;
     };
+
     template <typename T> T log_holder<T>::critical(log_level::critical);
     template <typename T> T log_holder<T>::error(log_level::error);
     template <typename T> T log_holder<T>::warning(log_level::warning);
@@ -167,6 +242,5 @@ namespace utils {
     template <typename T> T log_holder<T>::log(default_log_level::default_level);
 
     struct log : public log_holder<logger> {};
-
 
 }
