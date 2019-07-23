@@ -1,0 +1,24 @@
+{{#banner}}
+<section id="title" class="emerald">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1>{{title}}</h1>
+                <p>{{subtitle}}</p>
+            </div>
+            <div class="col-sm-6">
+                <ul class="breadcrumb pull-right">
+                    {{@foreach}}("breadcrumbs")
+                        {{^is_last}}
+                            <li><a href="{{link}}">{{title}}</a></li>
+                        {{/is_last}}
+                        {{#is_last}}
+                            <li class="active">{{title}}</li>
+                        {{/is_last}}
+                    {{/foreach}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section><!--/#title-->
+{{/banner}}

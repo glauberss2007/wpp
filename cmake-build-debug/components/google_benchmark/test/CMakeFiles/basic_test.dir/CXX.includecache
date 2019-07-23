@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../components/google_benchmark/include/benchmark/benchmark_api.h
+assert.h
+-
+stddef.h
+-
+stdint.h
+-
+string
+-
+vector
+-
+map
+-
+macros.h
+../components/google_benchmark/include/benchmark/macros.h
+type_traits
+-
+initializer_list
+-
+utility
+-
+intrin.h
+-
+
+../components/google_benchmark/include/benchmark/macros.h
+
+/home/glauber/CLionProjects/wpp/components/google_benchmark/test/basic_test.cc
+benchmark/benchmark_api.h
+/home/glauber/CLionProjects/wpp/components/google_benchmark/test/benchmark/benchmark_api.h
+

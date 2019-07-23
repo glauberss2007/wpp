@@ -1,0 +1,2 @@
+/usr/bin/ar qc libua-parser.a  CMakeFiles/ua-parser.dir/uap-cpp/UaParser.cpp.o
+/usr/bin/ranlib libua-parser.a

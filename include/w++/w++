@@ -1,0 +1,33 @@
+//
+// Created by Alan de Freitas on 15/09/17.
+//
+
+#ifndef WPP_W_H
+#define WPP_W_H
+
+// external libs
+//#include "bustache/model.hpp"
+#include "utils/json.hpp"
+
+namespace wpp {
+    //namespace mustache = bustache;
+    using json = nlohmann::json;
+}
+
+// Declaration
+// Application
+#include "application.h"
+
+// Definição
+//#include "http_server.hpp"
+
+/*
+// Guards keep user data to protect the routes
+#include "guard.h"
+*/
+// Functions with cycles
+#include "response.hpp"
+#include "request.hpp"
+
+
+#endif //WPP_W_H

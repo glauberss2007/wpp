@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -Wall -Wextra -Wshadow -pedantic -pedantic-errors -Wfloat-equal -fstrict-aliasing -Wzero-as-null-pointer-constant -Wstrict-aliasing -g  -rdynamic CMakeFiles/user_counters_test.dir/user_counters_test.cc.o  -o user_counters_test -lpthread liboutput_test_helper.a ../src/libbenchmark.a -lpthread -lrt 

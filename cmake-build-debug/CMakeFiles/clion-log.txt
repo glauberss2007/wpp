@@ -1,0 +1,268 @@
+/snap/clion/52/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/glauber/CLionProjects/wppcopy2
+-- The C compiler identification is GNU 7.3.0
+-- The CXX compiler identification is GNU 7.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.0g") 
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+CMake Warning at /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:801 (message):
+  New Boost version may have incorrect or missing dependencies and imported
+  targets
+Call Stack (most recent call first):
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:907 (_Boost_COMPONENT_DEPENDENCIES)
+  /snap/clion/52/bin/cmake/share/cmake-3.10/Modules/FindBoost.cmake:1542 (_Boost_MISSING_DEPENDENCIES)
+  components/findpackages.cmake:20 (find_package)
+  CMakeLists.txt:22 (include)
+
+
+/usr/local/lib/libboost_filesystem.a;/usr/local/lib/libboost_regex.a;/usr/local/lib/libboost_system.a;/usr/local/lib/libboost_iostreams.a;/usr/local/lib/libboost_date_time.a;/usr/local/lib/libboost_chrono.a;/usr/local/lib/libboost_timer.a;/usr/local/lib/libboost_thread.a;/usr/local/lib/libboost_coroutine.a;/usr/local/lib/libboost_log.a;/usr/local/lib/libboost_program_options.a;/usr/local/lib/libboost_serialization.a;/usr/local/lib/libboost_atomic.a;/usr/local/lib/libboost_context.a;/usr/local/lib/libboost_log_setup.a
+CMake Warning at components/findpackages.cmake:38 (find_package):
+  By not providing "FindSQLITE3.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "SQLITE3", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "SQLITE3" with any
+  of the following names:
+
+    SQLITE3Config.cmake
+    sqlite3-config.cmake
+
+  Add the installation prefix of "SQLITE3" to CMAKE_PREFIX_PATH or set
+  "SQLITE3_DIR" to a directory containing one of the above files.  If
+  "SQLITE3" provides a separate development package or SDK, be sure it has
+  been installed.
+Call Stack (most recent call first):
+  CMakeLists.txt:22 (include)
+
+
+
+-- Found Git: /usr/bin/git (found version "2.17.1") 
+-- git Version: v0.0.0-dirty
+-- Version: 0.0.0
+-- Performing Test HAVE_CXX_FLAG_STD_CXX11
+-- Performing Test HAVE_CXX_FLAG_STD_CXX11 - Success
+-- Performing Test HAVE_CXX_FLAG_WALL
+-- Performing Test HAVE_CXX_FLAG_WALL - Success
+-- Performing Test HAVE_CXX_FLAG_WEXTRA
+-- Performing Test HAVE_CXX_FLAG_WEXTRA - Success
+-- Performing Test HAVE_CXX_FLAG_WSHADOW
+-- Performing Test HAVE_CXX_FLAG_WSHADOW - Success
+-- Performing Test HAVE_CXX_FLAG_WERROR
+-- Performing Test HAVE_CXX_FLAG_WERROR - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS - Success
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32 - Failed
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL - Success
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WZERO_AS_NULL_POINTER_CONSTANT
+-- Performing Test HAVE_CXX_FLAG_WZERO_AS_NULL_POINTER_CONSTANT - Success
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WD654
+-- Performing Test HAVE_CXX_FLAG_WD654 - Failed
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY - Failed
+-- Performing Test HAVE_CXX_FLAG_COVERAGE
+-- Performing Test HAVE_CXX_FLAG_COVERAGE - Success
+-- Performing Test HAVE_STD_REGEX
+-- Performing Test HAVE_STD_REGEX -- success
+-- Performing Test HAVE_GNU_POSIX_REGEX
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Performing Test HAVE_POSIX_REGEX
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Performing Test HAVE_STEADY_CLOCK
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Performing Test BENCHMARK_HAS_O3_FLAG
+-- Performing Test BENCHMARK_HAS_O3_FLAG - Success
+-- Performing Test BENCHMARK_HAS_CXX03_FLAG
+-- Performing Test BENCHMARK_HAS_CXX03_FLAG - Success
+CMake Deprecation Warning at components/yaml-cpp/CMakeLists.txt:9 (cmake_policy):
+  The OLD behavior for policy CMP0012 will be removed from a future version
+  of CMake.
+
+  The cmake-policies(7) manual explains that the OLD behaviors of all
+  policies are deprecated and that a policy should be set to OLD only under
+  specific short-term circumstances.  Projects should be ported to the NEW
+  behavior and not rely on setting a policy to OLD.
+
+
+CMake Deprecation Warning at components/yaml-cpp/CMakeLists.txt:13 (cmake_policy):
+  The OLD behavior for policy CMP0015 will be removed from a future version
+  of CMake.
+
+  The cmake-policies(7) manual explains that the OLD behaviors of all
+  policies are deprecated and that a policy should be set to OLD only under
+  specific short-term circumstances.  Projects should be ported to the NEW
+  behavior and not rely on setting a policy to OLD.
+
+
+-- Performing Test FLAG_WEXTRA
+-- Performing Test FLAG_WEXTRA - Success
+-- Found PythonInterp: /usr/bin/python (found version "2.7.15") 
+-- main.cpp/home/glauber/CLionProjects/wppcopy2/include/w++/application.h/home/glauber/CLionProjects/wppcopy2/include/w++/cache.h/home/glauber/CLionProjects/wppcopy2/include/w++/cookie_parser.h/home/glauber/CLionProjects/wppcopy2/include/w++/crypto.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/database.h/home/glauber/CLionProjects/wppcopy2/include/w++/detect_ssl.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/encryption.h/home/glauber/CLionProjects/wppcopy2/include/w++/enums.h/home/glauber/CLionProjects/wppcopy2/include/w++/guard.h/home/glauber/CLionProjects/wppcopy2/include/w++/http_server.h/home/glauber/CLionProjects/wppcopy2/include/w++/methods.h/home/glauber/CLionProjects/wppcopy2/include/w++/query_string.h/home/glauber/CLionProjects/wppcopy2/include/w++/regex_order.h/home/glauber/CLionProjects/wppcopy2/include/w++/request.h/home/glauber/CLionProjects/wppcopy2/include/w++/request.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/response.h/home/glauber/CLionProjects/wppcopy2/include/w++/response.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/route_properties.h/home/glauber/CLionProjects/wppcopy2/include/w++/routing_parameters.h/home/glauber/CLionProjects/wppcopy2/include/w++/server_certificate.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/ssl_stream.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/trie.h/home/glauber/CLionProjects/wppcopy2/include/w++/utility.hpp/home/glauber/CLionProjects/wppcopy2/include/w++/w++
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/glauber/CLionProjects/wppcopy2/cmake-build-debug
