@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,14 +38,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include/gtest")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include/gtest")
 endif()
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/tools/website
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/tools/website
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

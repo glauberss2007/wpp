@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/components
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/components
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/google_benchmark/cmake_install.cmake")
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/google_benchmark/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/cmake_install.cmake")
 
 endif()
 

@@ -49,7 +49,7 @@ set_property(TARGET yaml-cpp APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(yaml-cpp PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX"
   IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG "-lpthread"
-  IMPORTED_LOCATION_DEBUG "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/libyaml-cpp.a"
+  IMPORTED_LOCATION_DEBUG "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/libyaml-cpp.a"
   )
 
 # This file does not depend on other imported targets which have

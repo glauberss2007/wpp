@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/components/google_benchmark/test
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/components/google_benchmark/test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

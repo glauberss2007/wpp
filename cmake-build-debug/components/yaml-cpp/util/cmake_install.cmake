@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/util
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/util
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

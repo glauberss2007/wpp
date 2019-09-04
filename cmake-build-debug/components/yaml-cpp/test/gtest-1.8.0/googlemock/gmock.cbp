@@ -8,361 +8,361 @@
 		<Option virtualFolders="CMake Files\;CMake Files\components\;CMake Files\components\yaml-cpp\;CMake Files\components\yaml-cpp\test\;CMake Files\components\yaml-cpp\test\gtest-1.8.0\;CMake Files\components\yaml-cpp\test\gtest-1.8.0\googlemock\;CMake Files\components\yaml-cpp\test\gtest-1.8.0\googletest\;CMake Files\components\yaml-cpp\test\gtest-1.8.0\googletest\cmake\;CMake Files\components\yaml-cpp\util\;CMake Files\components\google_benchmark\;CMake Files\components\google_benchmark\cmake\;CMake Files\components\google_benchmark\src\;CMake Files\components\google_benchmark\test\;CMake Files\tools\;CMake Files\tools\website\;CMake Files\tools\tests\;CMake Files\tools\tests\scratch\;CMake Files\tools\tests\tests\;CMake Files\tools\tests\benchmarks\;CMake Files\tools\tests\openssl\;CMake Files\tools\tests\sqlorm\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gmock_main">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock_main.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock_main"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock_main"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gmock_main/fast">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock_main.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock_main/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock_main/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gmock">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gmock/fast">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/libgmock.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 gmock/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gtest_main">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest_main"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gtest_main/fast">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gtest">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="gtest/fast">
-				<Option output="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
+				<Option output="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/libgtest.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/src"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
-					<Add directory="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/src"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/include"/>
+					<Add directory="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
 					<Add directory="/usr/include/x86_64-linux-gnu"/>
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/components/yaml-cpp/test/gtest-1.8.0/googlemock/gtest/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/src/gmock-all.cc">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/src/gmock-all.cc">
 			<Option target="gmock_main"/>
 			<Option target="gmock"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/src/gmock_main.cc">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/src/gmock_main.cc">
 			<Option target="gmock_main"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/src/gtest-all.cc">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/src/gtest-all.cc">
 			<Option target="gmock_main"/>
 			<Option target="gmock"/>
 			<Option target="gtest"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/src/gtest_main.cc">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/src/gtest_main.cc">
 			<Option target="gtest_main"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/settings.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/settings.cmake">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/findpackages.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/findpackages.cmake">
 			<Option virtualFolder="CMake Files\components\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/yaml-cpp-config-version.cmake.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/yaml-cpp-config-version.cmake.in">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/yaml-cpp-config.cmake.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/yaml-cpp-config.cmake.in">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/yaml-cpp.pc.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/yaml-cpp.pc.cmake">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\test\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\test\gtest-1.8.0\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googlemock/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googlemock/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\test\gtest-1.8.0\googlemock\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\test\gtest-1.8.0\googletest\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/test/gtest-1.8.0/googletest/cmake/internal_utils.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/test/gtest-1.8.0/googletest/cmake/internal_utils.cmake">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\test\gtest-1.8.0\googletest\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/yaml-cpp/util/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/yaml-cpp/util/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\yaml-cpp\util\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\google_benchmark\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/AddCXXCompilerFlag.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/AddCXXCompilerFlag.cmake">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/CXXFeatureCheck.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/CXXFeatureCheck.cmake">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/Config.cmake.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/Config.cmake.in">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/GetGitVersion.cmake">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/GetGitVersion.cmake">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/gnu_posix_regex.cpp">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/gnu_posix_regex.cpp">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/posix_regex.cpp">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/posix_regex.cpp">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/std_regex.cpp">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/std_regex.cpp">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/cmake/steady_clock.cpp">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/cmake/steady_clock.cpp">
 			<Option virtualFolder="CMake Files\components\google_benchmark\cmake\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/src/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/src/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\google_benchmark\src\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/components/google_benchmark/test/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/components/google_benchmark/test/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\google_benchmark\test\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/website/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/website/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\website\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/website/environment.h.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/website/environment.h.in">
 			<Option virtualFolder="CMake Files\tools\website\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\scratch\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch/environment.h.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch/environment.h.in">
 			<Option virtualFolder="CMake Files\tools\tests\scratch\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/tests/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/tests/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\tests\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/benchmarks/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/benchmarks/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\benchmarks\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/openssl/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/openssl/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\openssl\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/CMakeLists.txt">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\tools\tests\sqlorm\"/>
 		</Unit>
-		<Unit filename="/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/environment.h.in">
+		<Unit filename="/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/environment.h.in">
 			<Option virtualFolder="CMake Files\tools\tests\sqlorm\"/>
 		</Unit>
 	</Project>

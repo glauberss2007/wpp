@@ -1,4 +1,4 @@
-# Install script for directory: /home/glauber/CLionProjects/wppcopy2/tools/tests
+# Install script for directory: /home/glauber/CLionProjects/wppGitHub/tools/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,11 +39,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/scratch/cmake_install.cmake")
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/tests/cmake_install.cmake")
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/benchmarks/cmake_install.cmake")
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/openssl/cmake_install.cmake")
-  include("/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/sqlorm/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/scratch/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/tests/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/benchmarks/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/openssl/cmake_install.cmake")
+  include("/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/sqlorm/cmake_install.cmake")
 
 endif()
 

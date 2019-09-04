@@ -9,30 +9,30 @@ namespace environment {
     // ad hoc
 
     // locations
-    inline const char* project_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    inline const char* cmake_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    inline const char* cmake_current_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/scratch";
-    inline const char* project_source_dir = "/home/glauber/CLionProjects/wppcopy2";
-    inline const char* cmake_source_dir = "/home/glauber/CLionProjects/wppcopy2";
-    inline const char* cmake_current_source_dir = "/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch";
+    inline const char* project_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    inline const char* cmake_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    inline const char* cmake_current_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/scratch";
+    inline const char* project_source_dir = "/home/glauber/CLionProjects/wppGitHub";
+    inline const char* cmake_source_dir = "/home/glauber/CLionProjects/wppGitHub";
+    inline const char* cmake_current_source_dir = "/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch";
 
-    inline const char* CMAKE_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    inline const char* CMAKE_COMMAND = "/snap/clion/52/bin/cmake/bin/cmake";
-    inline const char* CMAKE_CURRENT_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/scratch";
-    inline const char* CMAKE_CURRENT_LIST_FILE = "/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch/CMakeLists.txt";
-    inline const char* CMAKE_CURRENT_LIST_DIR = "/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch";
-    inline const char* CMAKE_CURRENT_LIST_LINE = "";
-    inline const char* CMAKE_CURRENT_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2/tools/tests/scratch";
+    inline const char* CMAKE_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    inline const char* CMAKE_COMMAND = "/snap/clion/81/bin/cmake/linux/bin/cmake";
+    inline const char* CMAKE_CURRENT_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/scratch";
+    inline const char* CMAKE_CURRENT_LIST_FILE = "/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch/CMakeLists.txt";
+    inline const char* CMAKE_CURRENT_LIST_DIR = "/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch";
+    inline const char* CMAKE_CURRENT_LIST_LINE = "1";
+    inline const char* CMAKE_CURRENT_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub/tools/tests/scratch";
     inline const char* CMAKE_FILES_DIRECTORY = "/CMakeFiles";
-    inline const char* CMAKE_MODULE_PATH = "/home/glauber/CLionProjects/wppcopy2/cmake;/home/glauber/CLionProjects/wppcopy2/components/cmake/Modules/";
-    inline const char* CMAKE_ROOT = "/snap/clion/52/bin/cmake/share/cmake-3.10";
-    inline const char* CMAKE_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2";
+    inline const char* CMAKE_MODULE_PATH = "/home/glauber/CLionProjects/wppGitHub/cmake;/home/glauber/CLionProjects/wppGitHub/components/cmake/Modules/";
+    inline const char* CMAKE_ROOT = "/snap/clion/81/bin/cmake/linux/share/cmake-3.14";
+    inline const char* CMAKE_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub";
     inline const char* EXECUTABLE_OUTPUT_PATH = "";
     inline const char* LIBRARY_OUTPUT_PATH = "";
     inline const char* PROJECT_NAME = "wpp";
     inline const char* CMAKE_PROJECT_NAME = "wpp";
-    inline const char* PROJECT_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    inline const char* PROJECT_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2";
+    inline const char* PROJECT_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    inline const char* PROJECT_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub";
 
     // Environment Variables
     inline const char* CMAKE_INCLUDE_PATH = "";
@@ -43,13 +43,13 @@ namespace environment {
 
     // System & Compiler Information
     inline const char* CMAKE_MAJOR_VERSION = "3";
-    inline const char* CMAKE_MINOR_VERSION = "10";
-    inline const char* CMAKE_PATCH_VERSION = "3";
+    inline const char* CMAKE_MINOR_VERSION = "14";
+    inline const char* CMAKE_PATCH_VERSION = "5";
     inline const char* CMAKE_TWEAK_VERSION = "0";
-    inline const char* CMAKE_VERSION = "3.10.3";
-    inline const char* CMAKE_SYSTEM = "Linux-4.15.0-43-generic";
+    inline const char* CMAKE_VERSION = "3.14.5";
+    inline const char* CMAKE_SYSTEM = "Linux-4.15.0-55-generic";
     inline const char* CMAKE_SYSTEM_NAME = "Linux";
-    inline const char* CMAKE_SYSTEM_VERSION = "4.15.0-43-generic";
+    inline const char* CMAKE_SYSTEM_VERSION = "4.15.0-55-generic";
     inline const char* CMAKE_SYSTEM_PROCESSOR = "x86_64";
     inline const char* CMAKE_GENERATOR = "Unix Makefiles";
     inline const bool UNIX = 01;

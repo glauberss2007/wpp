@@ -8,36 +8,36 @@
 namespace environment {
     // ad hoc
     const char* web_root_path = "http://localhost:8080/";
-    const char* assets_root_path = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/model/assets/";
-    const char* templates_root_path = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/view/templates/";
-    const char* user_agent_parser_root_path = "/home/glauber/CLionProjects/wppcopy2/components/uap-cpp";
-    const char* database_root_path = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/model/data";
+    const char* assets_root_path = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/model/assets/";
+    const char* templates_root_path = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/view/templates/";
+    const char* user_agent_parser_root_path = "/home/glauber/CLionProjects/wppGitHub/components/uap-cpp";
+    const char* database_root_path = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/model/data";
 
     // locations
-    const char* project_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    const char* cmake_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    const char* cmake_current_binary_dir = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/sqlorm";
-    const char* project_source_dir = "/home/glauber/CLionProjects/wppcopy2";
-    const char* cmake_source_dir = "/home/glauber/CLionProjects/wppcopy2";
-    const char* cmake_current_source_dir = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm";
+    const char* project_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    const char* cmake_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    const char* cmake_current_binary_dir = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/sqlorm";
+    const char* project_source_dir = "/home/glauber/CLionProjects/wppGitHub";
+    const char* cmake_source_dir = "/home/glauber/CLionProjects/wppGitHub";
+    const char* cmake_current_source_dir = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm";
 
-    const char* CMAKE_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    const char* CMAKE_COMMAND = "/snap/clion/52/bin/cmake/bin/cmake";
-    const char* CMAKE_CURRENT_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug/tools/tests/sqlorm";
-    const char* CMAKE_CURRENT_LIST_FILE = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm/CMakeLists.txt";
-    const char* CMAKE_CURRENT_LIST_DIR = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm";
-    const char* CMAKE_CURRENT_LIST_LINE = "";
-    const char* CMAKE_CURRENT_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2/tools/tests/sqlorm";
+    const char* CMAKE_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    const char* CMAKE_COMMAND = "/snap/clion/81/bin/cmake/linux/bin/cmake";
+    const char* CMAKE_CURRENT_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug/tools/tests/sqlorm";
+    const char* CMAKE_CURRENT_LIST_FILE = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm/CMakeLists.txt";
+    const char* CMAKE_CURRENT_LIST_DIR = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm";
+    const char* CMAKE_CURRENT_LIST_LINE = "7";
+    const char* CMAKE_CURRENT_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub/tools/tests/sqlorm";
     const char* CMAKE_FILES_DIRECTORY = "/CMakeFiles";
-    const char* CMAKE_MODULE_PATH = "/home/glauber/CLionProjects/wppcopy2/cmake;/home/glauber/CLionProjects/wppcopy2/components/cmake/Modules/";
-    const char* CMAKE_ROOT = "/snap/clion/52/bin/cmake/share/cmake-3.10";
-    const char* CMAKE_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2";
+    const char* CMAKE_MODULE_PATH = "/home/glauber/CLionProjects/wppGitHub/cmake;/home/glauber/CLionProjects/wppGitHub/components/cmake/Modules/";
+    const char* CMAKE_ROOT = "/snap/clion/81/bin/cmake/linux/share/cmake-3.14";
+    const char* CMAKE_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub";
     const char* EXECUTABLE_OUTPUT_PATH = "";
     const char* LIBRARY_OUTPUT_PATH = "";
     const char* PROJECT_NAME = "wpp";
     const char* CMAKE_PROJECT_NAME = "wpp";
-    const char* PROJECT_BINARY_DIR = "/home/glauber/CLionProjects/wppcopy2/cmake-build-debug";
-    const char* PROJECT_SOURCE_DIR = "/home/glauber/CLionProjects/wppcopy2";
+    const char* PROJECT_BINARY_DIR = "/home/glauber/CLionProjects/wppGitHub/cmake-build-debug";
+    const char* PROJECT_SOURCE_DIR = "/home/glauber/CLionProjects/wppGitHub";
 
     // Environment Variables
     const char* CMAKE_INCLUDE_PATH = "";
@@ -48,13 +48,13 @@ namespace environment {
 
     // System & Compiler Information
     const char* CMAKE_MAJOR_VERSION = "3";
-    const char* CMAKE_MINOR_VERSION = "10";
-    const char* CMAKE_PATCH_VERSION = "3";
+    const char* CMAKE_MINOR_VERSION = "14";
+    const char* CMAKE_PATCH_VERSION = "5";
     const char* CMAKE_TWEAK_VERSION = "0";
-    const char* CMAKE_VERSION = "3.10.3";
-    const char* CMAKE_SYSTEM = "Linux-4.15.0-43-generic";
+    const char* CMAKE_VERSION = "3.14.5";
+    const char* CMAKE_SYSTEM = "Linux-4.15.0-55-generic";
     const char* CMAKE_SYSTEM_NAME = "Linux";
-    const char* CMAKE_SYSTEM_VERSION = "4.15.0-43-generic";
+    const char* CMAKE_SYSTEM_VERSION = "4.15.0-55-generic";
     const char* CMAKE_SYSTEM_PROCESSOR = "x86_64";
     const char* CMAKE_GENERATOR = "Unix Makefiles";
     const bool UNIX = 01;
