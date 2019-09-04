@@ -38,7 +38,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/components/uap-cpp/)
 #######################################################
 # wpp sources
 set(WPP_SRC_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/application.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/application.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/cache.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/cookie_parser.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/w++/crypto.hpp

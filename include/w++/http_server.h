@@ -8,7 +8,7 @@
 #include "detect_ssl.hpp"
 #include "server_certificate.hpp"
 #include "ssl_stream.hpp"
-#include "application.h"
+#include "application.hpp"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
